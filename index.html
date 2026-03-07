@@ -391,6 +391,71 @@
       flex-wrap: wrap;
     }
 
+    .planner-form {
+      border: 1px solid #e2d8ca;
+      background: #fffdfa;
+      border-radius: 20px;
+      padding: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-field label {
+      font-size: 14px;
+      font-weight: 800;
+      color: #7d705e;
+    }
+
+    .form-field input,
+    .form-field select {
+      width: 100%;
+      height: 50px;
+      border: 1px solid #ddd2c2;
+      background: #fff;
+      border-radius: 14px;
+      padding: 0 14px;
+      font-size: 16px;
+      outline: none;
+      color: #2f2b27;
+    }
+
+    .main-add-btn {
+      width: 100%;
+      height: 54px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 16px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .form-msg {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--red);
+    }
+
+    .form-msg.success {
+      color: #247241;
+    }
+
     @media (max-width: 900px) {
       .teacher-layout {
         grid-template-columns: 1fr;
@@ -425,6 +490,9 @@
       .danger-btn {
         flex: 1;
       }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -432,7 +500,6 @@
   <div class="page">
     <div class="container">
 
-      <!-- 입장 화면 -->
       <div id="landingView" class="landing-wrap">
         <div class="landing-card card">
           <div class="eyebrow">STUDENT PLANNER</div>
@@ -450,7 +517,6 @@
         </div>
       </div>
 
-      <!-- 학생 화면 -->
       <div id="studentView" class="hidden">
         <div class="topbar">
           <div class="topbar-left">
@@ -481,7 +547,6 @@
         </div>
       </div>
 
-      <!-- 선생님 화면 -->
       <div id="teacherView" class="hidden">
         <div class="topbar">
           <div class="topbar-left">
@@ -528,6 +593,47 @@
               </div>
 
               <div style="margin-top:18px;">
+                <div class="section-title">플래너 추가</div>
+
+                <div class="planner-form">
+                  <div class="form-grid">
+                    <div class="form-field">
+                      <label>날짜</label>
+                      <input type="date" id="plannerDateInput">
+                    </div>
+
+                    <div class="form-field">
+                      <label>과목</label>
+                      <input type="text" id="plannerSubjectInput" placeholder="예: 영어">
+                    </div>
+
+                    <div class="form-field full">
+                      <label>학습내용</label>
+                      <input type="text" id="plannerContentInput" placeholder="예: 구문독해 3강">
+                    </div>
+
+                    <div class="form-field">
+                      <label>상태</label>
+                      <select id="plannerStatusInput">
+                        <option value="학습 대기">학습 대기</option>
+                        <option value="학습 완료">학습 완료</option>
+                        <option value="조정 필요">조정 필요</option>
+                        <option value="학습 없음">학습 없음</option>
+                      </select>
+                    </div>
+
+                    <div class="form-field full">
+                      <label>메모</label>
+                      <input type="text" id="plannerMemoInput" placeholder="예: 재시험 필요 없음">
+                    </div>
+                  </div>
+
+                  <button id="addPlannerBtn" class="main-add-btn">플래너 추가</button>
+                  <div id="plannerAddMsg" class="form-msg"></div>
+                </div>
+              </div>
+
+              <div style="margin-top:18px;">
                 <div class="section-title">이번 주 플랜</div>
                 <div id="teacherWeekPlanBox"></div>
               </div>
@@ -540,7 +646,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw9lEjSrSNyZIbqkxt9Nf-9SntBVRQXgt4dW1-XnoLdsS1qn_A_YoSKCj0WTCUkL9ct6A/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxMqNcoWslXpd_A6C6yNbMHfIhIj1xJi-qqZOBnHP34AN4X1BffgiF5nr09Y0kOmfzEFQ/exec";
 
     const landingView = document.getElementById("landingView");
     const studentView = document.getElementById("studentView");
@@ -568,6 +674,14 @@
     const teacherCopyStudentCodeBtn = document.getElementById("teacherCopyStudentCodeBtn");
     const teacherCopyTodayBtn = document.getElementById("teacherCopyTodayBtn");
     const teacherLogoutBtn = document.getElementById("teacherLogoutBtn");
+
+    const plannerDateInput = document.getElementById("plannerDateInput");
+    const plannerSubjectInput = document.getElementById("plannerSubjectInput");
+    const plannerContentInput = document.getElementById("plannerContentInput");
+    const plannerStatusInput = document.getElementById("plannerStatusInput");
+    const plannerMemoInput = document.getElementById("plannerMemoInput");
+    const addPlannerBtn = document.getElementById("addPlannerBtn");
+    const plannerAddMsg = document.getElementById("plannerAddMsg");
 
     let currentSession = null;
     let currentStudentData = null;
@@ -719,36 +833,36 @@
     }
 
     async function enterCode() {
-  const code = codeInput.value.trim();
-  landingMsg.textContent = "";
+      const code = codeInput.value.trim();
+      landingMsg.textContent = "";
 
-  if (!code) {
-    landingMsg.textContent = "코드를 입력해 주세요.";
-    return;
-  }
+      if (!code) {
+        landingMsg.textContent = "코드를 입력해 주세요.";
+        return;
+      }
 
-  try {
-    const res = await fetch(`${API_URL}?action=session&code=${encodeURIComponent(code)}`);
-    const data = await res.json();
+      try {
+        const res = await fetch(`${API_URL}?action=session&code=${encodeURIComponent(code)}`);
+        const data = await res.json();
 
-    if (!data.success) {
-      landingMsg.textContent = data.message || "조회 실패";
-      return;
+        if (!data.success) {
+          landingMsg.textContent = data.message || "조회 실패";
+          return;
+        }
+
+        saveSession(data);
+
+        if (data.mode === "student") {
+          await loadStudentView(data.student.code);
+        } else if (data.mode === "teacher") {
+          await loadTeacherView(data.teacher);
+        } else {
+          landingMsg.textContent = "알 수 없는 접근 유형입니다.";
+        }
+      } catch (e) {
+        landingMsg.textContent = "접속 중 오류가 발생했습니다.";
+      }
     }
-
-    saveSession(data);
-
-    if (data.mode === "student") {
-      await loadStudentView(data.student.code);
-    } else if (data.mode === "teacher") {
-      await loadTeacherView(data.teacher);
-    } else {
-      landingMsg.textContent = "알 수 없는 접근 유형입니다.";
-    }
-  } catch (e) {
-    landingMsg.textContent = "접속 중 오류가 발생했습니다.";
-  }
-}
 
     async function fetchStudentPlanner(studentCode) {
       const res = await fetch(`${API_URL}?action=studentPlanner&studentCode=${encodeURIComponent(studentCode)}`);
@@ -869,6 +983,66 @@
 
       teacherPlannerEmpty.classList.add("hidden");
       teacherPlannerDetail.classList.remove("hidden");
+
+      plannerDateInput.value = getTodayKey();
+      plannerSubjectInput.value = "";
+      plannerContentInput.value = "";
+      plannerStatusInput.value = "학습 대기";
+      plannerMemoInput.value = "";
+      plannerAddMsg.textContent = "";
+      plannerAddMsg.classList.remove("success");
+    }
+
+    async function addPlannerItem() {
+      plannerAddMsg.textContent = "";
+      plannerAddMsg.classList.remove("success");
+
+      if (!currentSession || currentSession.mode !== "teacher" || !currentSession.teacher) {
+        plannerAddMsg.textContent = "선생님 로그인 정보가 없습니다.";
+        return;
+      }
+
+      if (!currentTeacherStudentCode) {
+        plannerAddMsg.textContent = "먼저 학생을 선택해 주세요.";
+        return;
+      }
+
+      const date = plannerDateInput.value.trim();
+      const subject = plannerSubjectInput.value.trim();
+      const content = plannerContentInput.value.trim();
+      const status = plannerStatusInput.value.trim();
+      const memo = plannerMemoInput.value.trim();
+
+      if (!date || !subject || !content || !status) {
+        plannerAddMsg.textContent = "날짜, 과목, 학습내용, 상태를 입력해 주세요.";
+        return;
+      }
+
+      try {
+        const url = `${API_URL}?action=addPlannerItem`
+          + `&teacherId=${encodeURIComponent(currentSession.teacher.id)}`
+          + `&studentCode=${encodeURIComponent(currentTeacherStudentCode)}`
+          + `&date=${encodeURIComponent(date)}`
+          + `&subject=${encodeURIComponent(subject)}`
+          + `&content=${encodeURIComponent(content)}`
+          + `&status=${encodeURIComponent(status)}`
+          + `&memo=${encodeURIComponent(memo)}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.success) {
+          plannerAddMsg.textContent = data.message || "추가에 실패했습니다.";
+          return;
+        }
+
+        plannerAddMsg.textContent = "플래너가 추가되었습니다.";
+        plannerAddMsg.classList.add("success");
+
+        await loadTeacherStudentPlanner(currentTeacherStudentCode);
+      } catch (e) {
+        plannerAddMsg.textContent = "추가 중 오류가 발생했습니다.";
+      }
     }
 
     async function copyStudentTodayPlans() {
@@ -901,6 +1075,7 @@
     copyTodayBtn.addEventListener("click", copyStudentTodayPlans);
     teacherCopyTodayBtn.addEventListener("click", copyStudentTodayPlans);
     teacherCopyStudentCodeBtn.addEventListener("click", copyTeacherSelectedStudentCode);
+    addPlannerBtn.addEventListener("click", addPlannerItem);
 
     studentLogoutBtn.addEventListener("click", goHome);
     teacherLogoutBtn.addEventListener("click", goHome);
