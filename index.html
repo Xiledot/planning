@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 플래너</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0 0 8px;
+    }
+    .sub {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    input, button {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #d9deea;
+      padding: 14px;
+      font-size: 16px;
+    }
+    input {
+      margin-bottom: 10px;
+    }
+    button {
+      border: none;
+      background: #2f6bff;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #eef3ff;
+      color: #2f6bff;
+      margin-top: 10px;
+    }
+    .hidden { display: none; }
+    .student-info {
+      line-height: 1.7;
+      font-size: 15px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+    .plan-item {
+      border: 1px solid #e5e9f2;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fafbfd;
+    }
+    .plan-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .subject {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2f6bff;
+    }
+    .status {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+    .status.done { background: #e8f7e8; color: #1b7f32; }
+    .status.wait { background: #fff1df; color: #b96a00; }
+    .status.adjust { background: #f0e8ff; color: #6b3fd1; }
+    .status.none { background: #eceff4; color: #677286; }
+
+    .content {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .memo {
+      font-size: 13px;
+      color: #666;
+    }
+    .date-group {
+      margin-bottom: 16px;
+    }
+    .date-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 10px;
+      color: #333;
+    }
+    .msg {
+      font-size: 14px;
+      color: #d11a2a;
+      margin-top: 10px;
+    }
+    .empty {
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>학생 플래너</h1>
+      <div class="sub">학생코드를 입력하면 오늘 / 주간 학습 계획을 볼 수 있어요.</div>
+      <input type="text" id="studentCode" placeholder="학생코드 입력" />
+      <button id="loadBtn">조회하기</button>
+      <div id="message" class="msg"></div>
+    </div>
+
+    <div id="resultArea" class="hidden">
+      <div class="card">
+        <div class="section-title">학생 정보</div>
+        <div id="studentInfo" class="student-info"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">오늘 플랜</div>
+        <div id="todayPlans"></div>
+        <button id="copyTodayBtn" class="secondary">오늘 플랜 복사</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title">이번 주 플랜</div>
+        <div id="weekPlans"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "여기에_앱스크립트_웹앱_URL_입력";
+
+    const loadBtn = document.getElementById("loadBtn");
+    const messageEl = document.getElementById("message");
+    const resultArea = document.getElementById("resultArea");
+    const studentInfoEl = document.getElementById("studentInfo");
+    const todayPlansEl = document.getElementById("todayPlans");
+    const weekPlansEl = document.getElementById("weekPlans");
+    const copyTodayBtn = document.getElementById("copyTodayBtn");
+
+    let currentStudent = null;
+    let currentTodayPlans = [];
+
+    function formatDateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function getWeekRange() {
+      const today = new Date();
+      const day = today.getDay();
+      const mondayDiff = day === 0 ? -6 : 1 - day;
+      const monday = new Date(today);
+      monday.setDate(today.getDate() + mondayDiff);
+      monday.setHours(0, 0, 0, 0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      sunday.setHours(23, 59, 59, 999);
+
+      return { monday, sunday };
+    }
+
+    function normalizeDate(value) {
+      const d = new Date(value);
+      if (isNaN(d)) return null;
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function getStatusClass(status) {
+      if (status === "학습 완료") return "done";
+      if (status === "학습 대기") return "wait";
+      if (status === "조정 필요") return "adjust";
+      return "none";
+    }
+
+    function renderPlanItem(plan) {
+      return `
+        <div class="plan-item">
+          <div class="plan-top">
+            <div class="subject">${plan.subject || "-"}</div>
+            <div class="status ${getStatusClass(plan.status)}">${plan.status || "-"}</div>
+          </div>
+          <div class="content">${plan.content || "-"}</div>
+          ${plan.memo ? `<div class="memo">메모: ${plan.memo}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function groupByDate(plans) {
+      const grouped = {};
+      plans.forEach(plan => {
+        const key = typeof plan.date === "string" ? plan.date.slice(0, 10) : formatDateKey(new Date(plan.date));
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(plan);
+      });
+      return grouped;
+    }
+
+    async function loadPlanner() {
+      const studentCode = document.getElementById("studentCode").value.trim();
+      messageEl.textContent = "";
+      resultArea.classList.add("hidden");
+
+      if (!studentCode) {
+        messageEl.textContent = "학생코드를 입력해 주세요.";
+        return;
+      }
+
+      try {
+        const url = `${API_URL}?type=student&studentCode=${encodeURIComponent(studentCode)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.success) {
+          messageEl.textContent = data.message || "조회에 실패했습니다.";
+          return;
+        }
+
+        currentStudent = data.student;
+        const planners = data.planners || [];
+
+        studentInfoEl.innerHTML = `
+          학생명: ${data.student.name || "-"}<br>
+          학생코드: ${data.student.code || "-"}<br>
+          담당선생님: ${data.student.teacherName || "-"}
+        `;
+
+        const todayKey = formatDateKey(new Date());
+        currentTodayPlans = planners.filter(plan => {
+          const d = String(plan.date).slice(0, 10);
+          return d === todayKey;
+        });
+
+        if (currentTodayPlans.length === 0) {
+          todayPlansEl.innerHTML = `<div class="empty">오늘 등록된 플랜이 없습니다.</div>`;
+        } else {
+          todayPlansEl.innerHTML = currentTodayPlans.map(renderPlanItem).join("");
+        }
+
+        const { monday, sunday } = getWeekRange();
+        const weekPlans = planners.filter(plan => {
+          const d = normalizeDate(plan.date);
+          return d && d >= monday && d <= sunday;
+        });
+
+        if (weekPlans.length === 0) {
+          weekPlansEl.innerHTML = `<div class="empty">이번 주 등록된 플랜이 없습니다.</div>`;
+        } else {
+          const grouped = groupByDate(weekPlans);
+          const sortedDates = Object.keys(grouped).sort();
+
+          weekPlansEl.innerHTML = sortedDates.map(date => `
+            <div class="date-group">
+              <div class="date-title">${date}</div>
+              ${grouped[date].map(renderPlanItem).join("")}
+            </div>
+          `).join("");
+        }
+
+        resultArea.classList.remove("hidden");
+      } catch (err) {
+        messageEl.textContent = "불러오는 중 오류가 발생했습니다.";
+      }
+    }
+
+    async function copyTodayPlans() {
+      if (!currentStudent) return;
+
+      let text = `[오늘의 플랜]\n학생명: ${currentStudent.name}\n학생코드: ${currentStudent.code}\n\n`;
+
+      if (currentTodayPlans.length === 0) {
+        text += "오늘 등록된 플랜이 없습니다.";
+      } else {
+        text += currentTodayPlans.map((plan, i) =>
+          `${i + 1}. ${plan.content}${plan.subject ? ` (${plan.subject})` : ""}${plan.status ? ` - ${plan.status}` : ""}`
+        ).join("\n");
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        alert("오늘 플랜이 복사되었습니다.");
+      } catch (e) {
+        alert("복사에 실패했습니다.");
+      }
+    }
+
+    loadBtn.addEventListener("click", loadPlanner);
+    copyTodayBtn.addEventListener("click", copyTodayPlans);
+  </script>
+</body>
+</html>
