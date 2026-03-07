@@ -41,7 +41,7 @@
     }
 
     .container {
-      max-width: 1080px;
+      max-width: 1120px;
       margin: 0 auto;
     }
 
@@ -173,7 +173,8 @@
 
     .ghost-btn,
     .soft-btn,
-    .danger-btn {
+    .danger-btn,
+    .outline-btn {
       border: 1px solid var(--border);
       border-radius: 15px;
       height: 46px;
@@ -195,6 +196,10 @@
       background: var(--soft-red);
       border-color: #efc6bf;
       color: #d65b49;
+    }
+
+    .outline-btn {
+      background: #fffdfa;
     }
 
     .panel {
@@ -244,18 +249,18 @@
       gap: 10px;
       align-items: center;
       margin-bottom: 8px;
+      flex-wrap: wrap;
     }
 
-    .badge-subject {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--soft-blue);
-      color: var(--blue);
-      font-size: 13px;
-      font-weight: 900;
+    .plan-left-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
+    .badge-subject,
+    .badge-category,
     .badge-status {
       display: inline-block;
       padding: 6px 10px;
@@ -264,19 +269,29 @@
       font-weight: 900;
     }
 
-    .status-done {
+    .badge-subject {
+      background: var(--soft-blue);
+      color: var(--blue);
+    }
+
+    .badge-category {
+      background: #f5efe7;
+      color: #7b6a54;
+    }
+
+    .badge-status.status-done {
       background: var(--soft-green);
       color: #247241;
     }
-    .status-wait {
+    .badge-status.status-wait {
       background: var(--soft-orange);
       color: #b66b00;
     }
-    .status-adjust {
+    .badge-status.status-adjust {
       background: #f3eaff;
       color: #7040c9;
     }
-    .status-none {
+    .badge-status.status-none {
       background: #edf0f4;
       color: #647085;
     }
@@ -285,6 +300,12 @@
       font-size: 18px;
       font-weight: 900;
       margin-bottom: 6px;
+    }
+
+    .plan-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 4px;
     }
 
     .plan-memo {
@@ -456,6 +477,33 @@
       color: #247241;
     }
 
+    .category-note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .curriculum-box {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px dashed #d9cfbe;
+      border-radius: 18px;
+      background: #fffdfa;
+    }
+
+    .curriculum-box-title {
+      font-weight: 900;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .curriculum-box-desc {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
     @media (max-width: 900px) {
       .teacher-layout {
         grid-template-columns: 1fr;
@@ -487,7 +535,8 @@
       }
       .ghost-btn,
       .soft-btn,
-      .danger-btn {
+      .danger-btn,
+      .outline-btn {
         flex: 1;
       }
       .form-grid {
@@ -593,7 +642,7 @@
               </div>
 
               <div style="margin-top:18px;">
-                <div class="section-title">플래너 추가</div>
+                <div class="section-title">직접 플래너 추가</div>
 
                 <div class="planner-form">
                   <div class="form-grid">
@@ -603,8 +652,16 @@
                     </div>
 
                     <div class="form-field">
-                      <label>과목</label>
-                      <input type="text" id="plannerSubjectInput" placeholder="예: 영어">
+                      <label>분류</label>
+                      <select id="plannerCategoryInput">
+                        <option value="기타">기타</option>
+                        <option value="단어">단어</option>
+                        <option value="듣기">듣기</option>
+                        <option value="정규">정규</option>
+                        <option value="내신">내신</option>
+                        <option value="부교재">부교재</option>
+                        <option value="모의고사">모의고사</option>
+                      </select>
                     </div>
 
                     <div class="form-field full">
@@ -628,8 +685,21 @@
                     </div>
                   </div>
 
+                  <div class="category-note">
+                    지금 직접 추가 가능한 분류는 <b>기타 / 단어 / 듣기</b>만 가능합니다.<br>
+                    정규 / 내신 / 부교재 / 모의고사는 다음 단계에서 커리큘럼 선택형으로 연결됩니다.
+                  </div>
+
                   <button id="addPlannerBtn" class="main-add-btn">플래너 추가</button>
                   <div id="plannerAddMsg" class="form-msg"></div>
+                </div>
+
+                <div class="curriculum-box">
+                  <div class="curriculum-box-title">다음 단계 예정</div>
+                  <div class="curriculum-box-desc">
+                    정규 / 내신 / 부교재 / 모의고사는 커리큘럼목록 + 커리큘럼구성항목 시트를 읽어서<br>
+                    드롭다운 + 체크박스 방식으로 등록되게 바꿀 예정입니다.
+                  </div>
                 </div>
               </div>
 
@@ -646,7 +716,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxMqNcoWslXpd_A6C6yNbMHfIhIj1xJi-qqZOBnHP34AN4X1BffgiF5nr09Y0kOmfzEFQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwaAG31wMEl8S7QnPNCYN3tKKmhJBVGD--J0ysxI5rLBx3-vS8gQix--qke5-jvk15LjQ/exec";
 
     const landingView = document.getElementById("landingView");
     const studentView = document.getElementById("studentView");
@@ -676,7 +746,7 @@
     const teacherLogoutBtn = document.getElementById("teacherLogoutBtn");
 
     const plannerDateInput = document.getElementById("plannerDateInput");
-    const plannerSubjectInput = document.getElementById("plannerSubjectInput");
+    const plannerCategoryInput = document.getElementById("plannerCategoryInput");
     const plannerContentInput = document.getElementById("plannerContentInput");
     const plannerStatusInput = document.getElementById("plannerStatusInput");
     const plannerMemoInput = document.getElementById("plannerMemoInput");
@@ -741,9 +811,13 @@
       return `
         <div class="plan-item">
           <div class="plan-head">
-            <div class="badge-subject">${escapeHtml(plan.subject || "-")}</div>
+            <div class="plan-left-meta">
+              <div class="badge-category">${escapeHtml(plan.category || "-")}</div>
+              ${plan.curriculumName ? `<div class="badge-subject">${escapeHtml(plan.curriculumName)}</div>` : ''}
+            </div>
             <div class="badge-status ${getStatusClass(plan.status)}">${escapeHtml(plan.status || "-")}</div>
           </div>
+          ${plan.unitOrLecture ? `<div class="plan-sub">${escapeHtml(plan.unitOrLecture)}</div>` : ''}
           <div class="plan-content">${escapeHtml(plan.content || "-")}</div>
           ${plan.memo ? `<div class="plan-memo">메모: ${escapeHtml(plan.memo)}</div>` : ""}
         </div>
@@ -792,8 +866,9 @@
         text += `오늘 등록된 플랜이 없습니다.`;
       } else {
         text += todayPlans.map((plan, idx) => {
-          let line = `${idx + 1}. ${plan.content}`;
-          if (plan.subject) line += ` (${plan.subject})`;
+          let line = `${idx + 1}. `;
+          if (plan.category) line += `[${plan.category}] `;
+          line += plan.content;
           if (plan.status) line += ` - ${plan.status}`;
           return line;
         }).join("\n");
@@ -985,7 +1060,7 @@
       teacherPlannerDetail.classList.remove("hidden");
 
       plannerDateInput.value = getTodayKey();
-      plannerSubjectInput.value = "";
+      plannerCategoryInput.value = "기타";
       plannerContentInput.value = "";
       plannerStatusInput.value = "학습 대기";
       plannerMemoInput.value = "";
@@ -1008,22 +1083,27 @@
       }
 
       const date = plannerDateInput.value.trim();
-      const subject = plannerSubjectInput.value.trim();
+      const category = plannerCategoryInput.value.trim();
       const content = plannerContentInput.value.trim();
       const status = plannerStatusInput.value.trim();
       const memo = plannerMemoInput.value.trim();
 
-      if (!date || !subject || !content || !status) {
-        plannerAddMsg.textContent = "날짜, 과목, 학습내용, 상태를 입력해 주세요.";
+      if (!date || !category || !content || !status) {
+        plannerAddMsg.textContent = "날짜, 분류, 학습내용, 상태를 입력해 주세요.";
+        return;
+      }
+
+      if (!["기타", "단어", "듣기"].includes(category)) {
+        plannerAddMsg.textContent = "현재 직접 추가는 기타 / 단어 / 듣기만 가능합니다.";
         return;
       }
 
       try {
-        const url = `${API_URL}?action=addPlannerItem`
+        const url = `${API_URL}?action=addManualPlannerItem`
           + `&teacherId=${encodeURIComponent(currentSession.teacher.id)}`
           + `&studentCode=${encodeURIComponent(currentTeacherStudentCode)}`
           + `&date=${encodeURIComponent(date)}`
-          + `&subject=${encodeURIComponent(subject)}`
+          + `&category=${encodeURIComponent(category)}`
           + `&content=${encodeURIComponent(content)}`
           + `&status=${encodeURIComponent(status)}`
           + `&memo=${encodeURIComponent(memo)}`;
