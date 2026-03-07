@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>플래너 관리자</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #2b2b2b;
+      background-color: #f3efe6;
+      background-image:
+        linear-gradient(rgba(140,120,90,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(140,120,90,0.10) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 640px;
+      background: #fcfbf8;
+      border: 1px solid #d9d1c3;
+      border-radius: 28px;
+      box-shadow: 0 10px 30px rgba(70, 50, 20, 0.08);
+      padding: 34px;
+    }
+    .hidden { display: none; }
+    .eyebrow {
+      text-align: center;
+      letter-spacing: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #c94b33;
+      margin-bottom: 18px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 54px;
+      line-height: 1;
+      margin: 0 0 18px;
+      font-weight: 900;
+      color: #1f2f5e;
+    }
+    h1 .accent { color: #c94b33; }
+    .line {
+      width: 70px;
+      height: 4px;
+      background: #c94b33;
+      border-radius: 999px;
+      margin: 0 auto 28px;
+    }
+    .desc {
+      text-align: center;
+      color: #7b6f5f;
+      font-size: 18px;
+      margin-bottom: 28px;
+    }
+    input {
+      width: 100%;
+      height: 64px;
+      border-radius: 18px;
+      border: 2px solid #ddd3c3;
+      background: #f4f0e8;
+      font-size: 24px;
+      text-align: center;
+      padding: 0 16px;
+      outline: none;
+      margin-bottom: 18px;
+      color: #5b5348;
+    }
+    button {
+      width: 100%;
+      height: 64px;
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      font-size: 28px;
+      font-weight: 800;
+      background: #1f2f5e;
+      color: white;
+    }
+    .guide {
+      text-align: center;
+      color: #b1a28f;
+      font-size: 16px;
+      margin-top: 22px;
+    }
+    .msg {
+      text-align: center;
+      color: #c94b33;
+      margin-top: 14px;
+      font-size: 15px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .title-sm {
+      font-size: 28px;
+      font-weight: 900;
+      color: #2d2a26;
+    }
+    .sub {
+      color: #8f7f68;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+    .logout-btn {
+      width: auto;
+      height: 46px;
+      padding: 0 18px;
+      font-size: 16px;
+      border-radius: 14px;
+      background: #ece6da;
+      color: #23345f;
+      border: 1px solid #d3c8b7;
+    }
+    .list-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .student-item {
+      background: #fff;
+      border: 1px solid #ddd4c7;
+      border-radius: 22px;
+      padding: 22px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .student-name {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: #2e2a25;
+    }
+    .student-code {
+      font-size: 20px;
+      color: #7f7363;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .small-btn {
+      width: auto;
+      height: 46px;
+      padding: 0 16px;
+      font-size: 18px;
+      border-radius: 16px;
+      background: #eef1f7;
+      color: #22335d;
+      border: 1px solid #c9ced9;
+    }
+    .small-btn.red {
+      background: #fff4f2;
+      color: #d45442;
+      border: 1px solid #efc0b9;
+    }
+    @media (max-width: 640px) {
+      .card { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 42px; }
+      .student-item { flex-direction: column; align-items: flex-start; }
+      .actions { width: 100%; }
+      .small-btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div id="loginView">
+        <div class="eyebrow">PLANNER ADMIN</div>
+        <h1>플래너 <span class="accent">관리</span></h1>
+        <div class="line"></div>
+        <div class="desc">관리자 코드를 입력하고 시작하세요</div>
+        <input type="text" id="loginCode" placeholder="관리자 코드 입력..." />
+        <button id="loginBtn">입장하기</button>
+        <div class="guide">선생님은 본인 로그인코드로 접속</div>
+        <div id="loginMsg" class="msg"></div>
+      </div>
+
+      <div id="adminView" class="hidden">
+        <div class="topbar">
+          <div>
+            <div id="adminTitle" class="title-sm">관리자</div>
+            <div id="adminSub" class="sub">담당 학생 목록</div>
+          </div>
+          <button id="logoutBtn" class="logout-btn">로그아웃</button>
+        </div>
+
+        <div id="studentList" class="list-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "여기에_앱스크립트_웹앱_URL_입력";
+
+    const loginView = document.getElementById("loginView");
+    const adminView = document.getElementById("adminView");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const loginMsg = document.getElementById("loginMsg");
+    const loginCodeInput = document.getElementById("loginCode");
+    const adminTitle = document.getElementById("adminTitle");
+    const adminSub = document.getElementById("adminSub");
+    const studentList = document.getElementById("studentList");
+
+    let currentTeacher = null;
+
+    async function loginTeacher() {
+      const loginCode = loginCodeInput.value.trim();
+      loginMsg.textContent = "";
+
+      if (!loginCode) {
+        loginMsg.textContent = "로그인코드를 입력해 주세요.";
+        return;
+      }
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "teacherLogin",
+            loginCode
+          })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          loginMsg.textContent = data.message || "로그인 실패";
+          return;
+        }
+
+        currentTeacher = data.teacher;
+        localStorage.setItem("plannerTeacher", JSON.stringify(currentTeacher));
+        await renderAdmin();
+      } catch (e) {
+        loginMsg.textContent = "로그인 중 오류가 발생했습니다.";
+      }
+    }
+
+    async function renderAdmin() {
+      if (!currentTeacher) return;
+
+      loginView.classList.add("hidden");
+      adminView.classList.remove("hidden");
+      adminTitle.textContent = `${currentTeacher.name} 선생님`;
+      adminSub.textContent = `${currentTeacher.role} · 담당 학생 목록`;
+
+      try {
+        const res = await fetch(`${API_URL}?type=teacherStudents&teacherId=${encodeURIComponent(currentTeacher.id)}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          studentList.innerHTML = `<div class="msg">학생 목록을 불러오지 못했습니다.</div>`;
+          return;
+        }
+
+        if (!data.students || data.students.length === 0) {
+          studentList.innerHTML = `<div class="sub">담당 학생이 없습니다.</div>`;
+          return;
+        }
+
+        studentList.innerHTML = data.students.map(student => `
+          <div class="student-item">
+            <div>
+              <div class="student-name">${student.name}</div>
+              <div class="student-code">${student.code}</div>
+            </div>
+            <div class="actions">
+              <button class="small-btn" onclick="openPlanner('${student.code}')">플래너 보기</button>
+              <button class="small-btn red" onclick="copyCode('${student.code}')">코드 복사</button>
+            </div>
+          </div>
+        `).join("");
+      } catch (e) {
+        studentList.innerHTML = `<div class="msg">불러오는 중 오류가 발생했습니다.</div>`;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("plannerTeacher");
+      currentTeacher = null;
+      adminView.classList.add("hidden");
+      loginView.classList.remove("hidden");
+      loginCodeInput.value = "";
+    }
+
+    function openPlanner(studentCode) {
+      window.open(`./index.html?studentCode=${encodeURIComponent(studentCode)}`, "_blank");
+    }
+
+    async function copyCode(code) {
+      try {
+        await navigator.clipboard.writeText(code);
+        alert("학생코드가 복사되었습니다.");
+      } catch (e) {
+        alert("복사 실패");
+      }
+    }
+
+    loginBtn.addEventListener("click", loginTeacher);
+    logoutBtn.addEventListener("click", logout);
+
+    window.addEventListener("load", async () => {
+      const saved = localStorage.getItem("plannerTeacher");
+      if (saved) {
+        currentTeacher = JSON.parse(saved);
+        await renderAdmin();
+      }
+    });
+  </script>
+</body>
+</html>
