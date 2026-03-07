@@ -719,44 +719,36 @@
     }
 
     async function enterCode() {
-      const code = codeInput.value.trim();
-      landingMsg.textContent = "";
+  const code = codeInput.value.trim();
+  landingMsg.textContent = "";
 
-      if (!code) {
-        landingMsg.textContent = "코드를 입력해 주세요.";
-        return;
-      }
+  if (!code) {
+    landingMsg.textContent = "코드를 입력해 주세요.";
+    return;
+  }
 
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "enterCode",
-            code
-          })
-        });
+  try {
+    const res = await fetch(`${API_URL}?action=session&code=${encodeURIComponent(code)}`);
+    const data = await res.json();
 
-        const data = await res.json();
-
-        if (!data.success) {
-          landingMsg.textContent = data.message || "조회 실패";
-          return;
-        }
-
-        saveSession(data);
-
-        if (data.mode === "student") {
-          await loadStudentView(data.student.code);
-        } else if (data.mode === "teacher") {
-          await loadTeacherView(data.teacher);
-        } else {
-          landingMsg.textContent = "알 수 없는 접근 유형입니다.";
-        }
-      } catch (e) {
-        landingMsg.textContent = "접속 중 오류가 발생했습니다.";
-      }
+    if (!data.success) {
+      landingMsg.textContent = data.message || "조회 실패";
+      return;
     }
+
+    saveSession(data);
+
+    if (data.mode === "student") {
+      await loadStudentView(data.student.code);
+    } else if (data.mode === "teacher") {
+      await loadTeacherView(data.teacher);
+    } else {
+      landingMsg.textContent = "알 수 없는 접근 유형입니다.";
+    }
+  } catch (e) {
+    landingMsg.textContent = "접속 중 오류가 발생했습니다.";
+  }
+}
 
     async function fetchStudentPlanner(studentCode) {
       const res = await fetch(`${API_URL}?action=studentPlanner&studentCode=${encodeURIComponent(studentCode)}`);
