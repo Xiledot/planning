@@ -316,6 +316,15 @@
 
     loadBtn.addEventListener("click", loadPlanner);
     copyTodayBtn.addEventListener("click", copyTodayPlans);
+
+    window.addEventListener("load", () => {
+  const params = new URLSearchParams(window.location.search);
+  const studentCode = params.get("studentCode");
+  if (studentCode) {
+    document.getElementById("studentCode").value = studentCode;
+    loadPlanner();
+  }
+});
   </script>
 </body>
 </html>
