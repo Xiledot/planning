@@ -504,6 +504,57 @@
       font-size: 14px;
     }
 
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(243, 239, 230, 0.72);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
+    .loading-card {
+      background: #fffdfa;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 22px 26px;
+      min-width: 220px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      border: 4px solid #d8deef;
+      border-top-color: var(--navy);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .loading-text {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .is-loading {
+      opacity: 0.65;
+      pointer-events: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     @media (max-width: 900px) {
       .teacher-layout {
         grid-template-columns: 1fr;
@@ -712,6 +763,13 @@
         </div>
       </div>
 
+      <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-card">
+          <div class="spinner"></div>
+          <div id="loadingText" class="loading-text">불러오는 중...</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -752,10 +810,24 @@
     const plannerMemoInput = document.getElementById("plannerMemoInput");
     const addPlannerBtn = document.getElementById("addPlannerBtn");
     const plannerAddMsg = document.getElementById("plannerAddMsg");
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    const loadingText = document.getElementById("loadingText");
 
     let currentSession = null;
     let currentStudentData = null;
     let currentTeacherStudentCode = null;
+
+
+    function setLoading(show, text = "불러오는 중...") {
+      if (show) {
+        loadingText.textContent = text;
+        loadingOverlay.classList.add("show");
+        document.body.classList.add("is-loading");
+      } else {
+        loadingOverlay.classList.remove("show");
+        document.body.classList.remove("is-loading");
+      }
+    }
 
     function formatDateKey(date) {
       const y = date.getFullYear();
@@ -899,12 +971,10 @@
       currentSession = null;
       currentStudentData = null;
       currentTeacherStudentCode = null;
-      localStorage.removeItem("plannerSession");
     }
 
     function saveSession(session) {
       currentSession = session;
-      localStorage.setItem("plannerSession", JSON.stringify(session));
     }
 
     async function enterCode() {
@@ -916,6 +986,7 @@
         return;
       }
 
+      setLoading(true, "입장 중...");
       try {
         const res = await fetch(`${API_URL}?action=session&code=${encodeURIComponent(code)}`);
         const data = await res.json();
@@ -936,6 +1007,8 @@
         }
       } catch (e) {
         landingMsg.textContent = "접속 중 오류가 발생했습니다.";
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -990,6 +1063,7 @@
       teacherHeaderTitle.textContent = `${teacher.name} 선생님`;
       teacherHeaderSub.textContent = `${teacher.role} · 담당 학생 목록`;
 
+      setLoading(true, "학생 목록 불러오는 중...");
       try {
         const res = await fetch(`${API_URL}?action=teacherStudents&teacherId=${encodeURIComponent(teacher.id)}`);
         const data = await res.json();
@@ -1024,13 +1098,17 @@
       } catch (e) {
         teacherStudentList.innerHTML = `<div class="empty-box">학생 목록을 불러오는 중 오류가 발생했습니다.</div>`;
         showOnly("teacher");
+      } finally {
+        setLoading(false);
       }
     }
 
     async function loadTeacherStudentPlanner(studentCode) {
+      setLoading(true, "학생 플래너 불러오는 중...");
       const data = await fetchStudentPlanner(studentCode);
 
       if (!data.success) {
+        setLoading(false);
         alert(data.message || "학생 플래너를 불러오지 못했습니다.");
         return;
       }
@@ -1066,6 +1144,7 @@
       plannerMemoInput.value = "";
       plannerAddMsg.textContent = "";
       plannerAddMsg.classList.remove("success");
+      setLoading(false);
     }
 
     async function addPlannerItem() {
@@ -1098,6 +1177,7 @@
         return;
       }
 
+      setLoading(true, "플래너 추가 중...");
       try {
         const url = `${API_URL}?action=addManualPlannerItem`
           + `&teacherId=${encodeURIComponent(currentSession.teacher.id)}`
@@ -1122,6 +1202,8 @@
         await loadTeacherStudentPlanner(currentTeacherStudentCode);
       } catch (e) {
         plannerAddMsg.textContent = "추가 중 오류가 발생했습니다.";
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -1160,31 +1242,8 @@
     studentLogoutBtn.addEventListener("click", goHome);
     teacherLogoutBtn.addEventListener("click", goHome);
 
-    window.addEventListener("load", async () => {
-      const saved = localStorage.getItem("plannerSession");
-      if (!saved) {
-        showOnly("landing");
-        return;
-      }
-
-      try {
-        const session = JSON.parse(saved);
-        currentSession = session;
-
-        if (session.mode === "student" && session.student?.code) {
-          await loadStudentView(session.student.code);
-          return;
-        }
-
-        if (session.mode === "teacher" && session.teacher?.id) {
-          await loadTeacherView(session.teacher);
-          return;
-        }
-
-        showOnly("landing");
-      } catch (e) {
-        showOnly("landing");
-      }
+    window.addEventListener("load", () => {
+      showOnly("landing");
     });
   </script>
 </body>
