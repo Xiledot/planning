@@ -6,166 +6,572 @@
   <title>학생 플래너</title>
   <style>
     * { box-sizing: border-box; }
+    :root{
+      --bg:#f3efe6;
+      --grid:rgba(146,126,92,0.10);
+      --card:#fcfbf8;
+      --border:#ddd3c3;
+      --text:#2f2b27;
+      --muted:#8a7b67;
+      --navy:#1f2f5e;
+      --red:#c94b33;
+      --blue:#3868f2;
+      --soft-blue:#eaf0ff;
+      --soft-red:#fff1ee;
+      --soft-green:#eaf7ec;
+      --soft-orange:#fff3e4;
+      --shadow:0 14px 34px rgba(78,59,31,0.08);
+      --radius:28px;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #222;
+      color: var(--text);
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 34px 34px;
     }
-    .wrap {
-      max-width: 720px;
+
+    .page {
+      min-height: 100vh;
+      padding: 28px 16px 60px;
+    }
+
+    .container {
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 24px 16px 60px;
     }
+
+    .hidden { display: none !important; }
+
     .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .landing-wrap {
+      min-height: calc(100vh - 88px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .landing-card {
+      width: 100%;
+      max-width: 620px;
+      padding: 34px 30px 28px;
+    }
+
+    .eyebrow {
+      text-align: center;
+      letter-spacing: 6px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--red);
       margin-bottom: 16px;
     }
-    h1 {
-      font-size: 24px;
-      margin: 0 0 8px;
+
+    .hero-title {
+      text-align: center;
+      font-size: 58px;
+      line-height: 1;
+      margin: 0 0 18px;
+      font-weight: 900;
+      color: var(--navy);
     }
-    .sub {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 20px;
+
+    .hero-title .accent {
+      color: var(--red);
     }
-    input, button {
+
+    .hero-line {
+      width: 76px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--red);
+      margin: 0 auto 28px;
+    }
+
+    .hero-desc {
+      text-align: center;
+      color: var(--muted);
+      font-size: 18px;
+      margin-bottom: 28px;
+    }
+
+    .code-input {
       width: 100%;
-      border-radius: 12px;
-      border: 1px solid #d9deea;
-      padding: 14px;
-      font-size: 16px;
+      height: 68px;
+      border: 2px solid #ddd4c6;
+      border-radius: 18px;
+      background: #f4efe6;
+      padding: 0 18px;
+      font-size: 26px;
+      text-align: center;
+      color: #5b5348;
+      outline: none;
     }
-    input {
-      margin-bottom: 10px;
-    }
-    button {
+
+    .main-btn {
+      width: 100%;
+      height: 68px;
       border: none;
-      background: #2f6bff;
+      border-radius: 18px;
+      margin-top: 16px;
+      background: var(--navy);
       color: white;
-      font-weight: 700;
+      font-size: 28px;
+      font-weight: 900;
       cursor: pointer;
     }
-    button.secondary {
-      background: #eef3ff;
-      color: #2f6bff;
-      margin-top: 10px;
+
+    .guide {
+      margin-top: 20px;
+      text-align: center;
+      color: #ad9b84;
+      font-size: 16px;
+      line-height: 1.6;
     }
-    .hidden { display: none; }
-    .student-info {
-      line-height: 1.7;
+
+    .msg {
+      margin-top: 14px;
+      text-align: center;
+      color: var(--red);
       font-size: 15px;
     }
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0 0 12px;
-    }
-    .plan-item {
-      border: 1px solid #e5e9f2;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: #fafbfd;
-    }
-    .plan-top {
+
+    .topbar {
       display: flex;
       justify-content: space-between;
-      gap: 8px;
       align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .topbar-left h2 {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .topbar-left p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ghost-btn,
+    .soft-btn,
+    .danger-btn {
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      height: 46px;
+      padding: 0 16px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 800;
+      background: #efe9dc;
+      color: var(--navy);
+    }
+
+    .soft-btn {
+      background: var(--soft-blue);
+      border-color: #ccd7ff;
+      color: var(--blue);
+    }
+
+    .danger-btn {
+      background: var(--soft-red);
+      border-color: #efc6bf;
+      color: #d65b49;
+    }
+
+    .panel {
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 18px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 900;
+      margin: 0 0 16px;
+    }
+
+    .info-lines {
+      line-height: 1.9;
+      font-size: 18px;
+    }
+
+    .info-lines span {
+      color: var(--muted);
+      display: inline-block;
+      min-width: 92px;
+    }
+
+    .plan-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .plan-item {
+      border: 1px solid #e3dacc;
+      background: #fff;
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .plan-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .badge-subject {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--soft-blue);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .status-done {
+      background: var(--soft-green);
+      color: #247241;
+    }
+    .status-wait {
+      background: var(--soft-orange);
+      color: #b66b00;
+    }
+    .status-adjust {
+      background: #f3eaff;
+      color: #7040c9;
+    }
+    .status-none {
+      background: #edf0f4;
+      color: #647085;
+    }
+
+    .plan-content {
+      font-size: 18px;
+      font-weight: 900;
       margin-bottom: 6px;
     }
-    .subject {
-      font-size: 13px;
-      font-weight: 700;
-      color: #2f6bff;
-    }
-    .status {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-weight: 700;
-    }
-    .status.done { background: #e8f7e8; color: #1b7f32; }
-    .status.wait { background: #fff1df; color: #b96a00; }
-    .status.adjust { background: #f0e8ff; color: #6b3fd1; }
-    .status.none { background: #eceff4; color: #677286; }
 
-    .content {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .memo {
-      font-size: 13px;
-      color: #666;
-    }
-    .date-group {
-      margin-bottom: 16px;
-    }
-    .date-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin: 0 0 10px;
-      color: #333;
-    }
-    .msg {
+    .plan-memo {
+      color: var(--muted);
       font-size: 14px;
-      color: #d11a2a;
-      margin-top: 10px;
     }
-    .empty {
-      color: #666;
-      font-size: 14px;
+
+    .empty-box {
+      border: 1px dashed #d8cebe;
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      background: #fffdfa;
+    }
+
+    .week-group {
+      margin-bottom: 18px;
+    }
+
+    .week-date {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: #5f564c;
+    }
+
+    .teacher-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+    }
+
+    .student-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .student-card {
+      border: 1px solid #ded4c6;
+      border-radius: 20px;
+      background: white;
+      padding: 16px;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .student-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+
+    .student-card.active {
+      border-color: #9bb2ff;
+      background: #f6f8ff;
+    }
+
+    .student-name {
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .student-code {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .teacher-right-placeholder {
+      height: 100%;
+      min-height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--muted);
+      padding: 24px;
+    }
+
+    .mini-title {
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0 0 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-left {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+      .teacher-layout {
+        grid-template-columns: 1fr;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .landing-card {
+        padding: 26px 18px 22px;
+      }
+      .hero-title {
+        font-size: 44px;
+      }
+      .code-input {
+        font-size: 22px;
+      }
+      .main-btn {
+        font-size: 24px;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .top-actions {
+        width: 100%;
+      }
+      .ghost-btn,
+      .soft-btn,
+      .danger-btn {
+        flex: 1;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>학생 플래너</h1>
-      <div class="sub">학생코드를 입력하면 오늘 / 주간 학습 계획을 볼 수 있어요.</div>
-      <input type="text" id="studentCode" placeholder="학생코드 입력" />
-      <button id="loadBtn">조회하기</button>
-      <div id="message" class="msg"></div>
-    </div>
+  <div class="page">
+    <div class="container">
 
-    <div id="resultArea" class="hidden">
-      <div class="card">
-        <div class="section-title">학생 정보</div>
-        <div id="studentInfo" class="student-info"></div>
+      <!-- 입장 화면 -->
+      <div id="landingView" class="landing-wrap">
+        <div class="landing-card card">
+          <div class="eyebrow">STUDENT PLANNER</div>
+          <h1 class="hero-title">플래너 <span class="accent">입장</span></h1>
+          <div class="hero-line"></div>
+          <div class="hero-desc">학생코드 또는 선생님 로그인코드를 입력하세요</div>
+
+          <input id="codeInput" class="code-input" type="text" placeholder="코드 입력..." />
+          <button id="enterBtn" class="main-btn">입장하기</button>
+          <div class="guide">
+            학생은 학생코드로,<br>
+            선생님은 로그인코드로 접속합니다.
+          </div>
+          <div id="landingMsg" class="msg"></div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="section-title">오늘 플랜</div>
-        <div id="todayPlans"></div>
-        <button id="copyTodayBtn" class="secondary">오늘 플랜 복사</button>
+      <!-- 학생 화면 -->
+      <div id="studentView" class="hidden">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h2>학생 플래너</h2>
+            <p>오늘 플랜과 이번 주 학습 계획을 확인할 수 있어요.</p>
+          </div>
+          <div class="top-actions">
+            <button id="copyTodayBtn" class="soft-btn">오늘 플랜 복사</button>
+            <button id="studentLogoutBtn" class="ghost-btn">처음으로</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel card">
+            <div class="section-title">학생 정보</div>
+            <div id="studentInfoBox" class="info-lines"></div>
+          </div>
+
+          <div class="panel card">
+            <div class="section-title">오늘 플랜</div>
+            <div id="todayPlanBox" class="plan-list"></div>
+          </div>
+        </div>
+
+        <div class="panel card">
+          <div class="section-title">이번 주 플랜</div>
+          <div id="weekPlanBox"></div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="section-title">이번 주 플랜</div>
-        <div id="weekPlans"></div>
+      <!-- 선생님 화면 -->
+      <div id="teacherView" class="hidden">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h2 id="teacherHeaderTitle">선생님</h2>
+            <p id="teacherHeaderSub">담당 학생을 선택하면 플래너를 볼 수 있어요.</p>
+          </div>
+          <div class="top-actions">
+            <button id="teacherLogoutBtn" class="ghost-btn">처음으로</button>
+          </div>
+        </div>
+
+        <div class="teacher-layout">
+          <div class="panel card">
+            <div class="section-title">담당 학생 목록</div>
+            <div id="teacherStudentList" class="student-list"></div>
+          </div>
+
+          <div class="panel card">
+            <div id="teacherPlannerEmpty" class="teacher-right-placeholder">
+              <div>
+                <div class="mini-title">학생을 선택하세요</div>
+                <div>왼쪽 목록에서 학생을 누르면 해당 학생의 플래너를 바로 확인할 수 있습니다.</div>
+              </div>
+            </div>
+
+            <div id="teacherPlannerDetail" class="hidden">
+              <div class="toolbar">
+                <div id="teacherSelectedInfo" class="toolbar-left"></div>
+                <div class="toolbar-right">
+                  <button id="teacherCopyStudentCodeBtn" class="soft-btn">학생코드 복사</button>
+                  <button id="teacherCopyTodayBtn" class="soft-btn">오늘 플랜 복사</button>
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div>
+                  <div class="section-title">학생 정보</div>
+                  <div id="teacherStudentInfoBox" class="info-lines"></div>
+                </div>
+                <div>
+                  <div class="section-title">오늘 플랜</div>
+                  <div id="teacherTodayPlanBox" class="plan-list"></div>
+                </div>
+              </div>
+
+              <div style="margin-top:18px;">
+                <div class="section-title">이번 주 플랜</div>
+                <div id="teacherWeekPlanBox"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw9lEjSrSNyZIbqkxt9Nf-9SntBVRQXgt4dW1-XnoLdsS1qn_A_YoSKCj0WTCUkL9ct6A/exec";
+    const API_URL = "여기에_앱스크립트_웹앱_URL_입력";
 
-    const loadBtn = document.getElementById("loadBtn");
-    const messageEl = document.getElementById("message");
-    const resultArea = document.getElementById("resultArea");
-    const studentInfoEl = document.getElementById("studentInfo");
-    const todayPlansEl = document.getElementById("todayPlans");
-    const weekPlansEl = document.getElementById("weekPlans");
+    const landingView = document.getElementById("landingView");
+    const studentView = document.getElementById("studentView");
+    const teacherView = document.getElementById("teacherView");
+
+    const codeInput = document.getElementById("codeInput");
+    const enterBtn = document.getElementById("enterBtn");
+    const landingMsg = document.getElementById("landingMsg");
+
+    const studentInfoBox = document.getElementById("studentInfoBox");
+    const todayPlanBox = document.getElementById("todayPlanBox");
+    const weekPlanBox = document.getElementById("weekPlanBox");
     const copyTodayBtn = document.getElementById("copyTodayBtn");
+    const studentLogoutBtn = document.getElementById("studentLogoutBtn");
 
-    let currentStudent = null;
-    let currentTodayPlans = [];
+    const teacherHeaderTitle = document.getElementById("teacherHeaderTitle");
+    const teacherHeaderSub = document.getElementById("teacherHeaderSub");
+    const teacherStudentList = document.getElementById("teacherStudentList");
+    const teacherPlannerEmpty = document.getElementById("teacherPlannerEmpty");
+    const teacherPlannerDetail = document.getElementById("teacherPlannerDetail");
+    const teacherSelectedInfo = document.getElementById("teacherSelectedInfo");
+    const teacherStudentInfoBox = document.getElementById("teacherStudentInfoBox");
+    const teacherTodayPlanBox = document.getElementById("teacherTodayPlanBox");
+    const teacherWeekPlanBox = document.getElementById("teacherWeekPlanBox");
+    const teacherCopyStudentCodeBtn = document.getElementById("teacherCopyStudentCodeBtn");
+    const teacherCopyTodayBtn = document.getElementById("teacherCopyTodayBtn");
+    const teacherLogoutBtn = document.getElementById("teacherLogoutBtn");
+
+    let currentSession = null;
+    let currentStudentData = null;
+    let currentTeacherStudentCode = null;
 
     function formatDateKey(date) {
       const y = date.getFullYear();
@@ -174,10 +580,15 @@
       return `${y}-${m}-${d}`;
     }
 
+    function getTodayKey() {
+      return formatDateKey(new Date());
+    }
+
     function getWeekRange() {
       const today = new Date();
       const day = today.getDay();
       const mondayDiff = day === 0 ? -6 : 1 - day;
+
       const monday = new Date(today);
       monday.setDate(today.getDate() + mondayDiff);
       monday.setHours(0, 0, 0, 0);
@@ -196,134 +607,338 @@
       return d;
     }
 
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
     function getStatusClass(status) {
-      if (status === "학습 완료") return "done";
-      if (status === "학습 대기") return "wait";
-      if (status === "조정 필요") return "adjust";
-      return "none";
+      if (status === "학습 완료") return "status-done";
+      if (status === "학습 대기") return "status-wait";
+      if (status === "조정 필요") return "status-adjust";
+      return "status-none";
     }
 
     function renderPlanItem(plan) {
       return `
         <div class="plan-item">
-          <div class="plan-top">
-            <div class="subject">${plan.subject || "-"}</div>
-            <div class="status ${getStatusClass(plan.status)}">${plan.status || "-"}</div>
+          <div class="plan-head">
+            <div class="badge-subject">${escapeHtml(plan.subject || "-")}</div>
+            <div class="badge-status ${getStatusClass(plan.status)}">${escapeHtml(plan.status || "-")}</div>
           </div>
-          <div class="content">${plan.content || "-"}</div>
-          ${plan.memo ? `<div class="memo">메모: ${plan.memo}</div>` : ""}
+          <div class="plan-content">${escapeHtml(plan.content || "-")}</div>
+          ${plan.memo ? `<div class="plan-memo">메모: ${escapeHtml(plan.memo)}</div>` : ""}
         </div>
       `;
     }
 
-    function groupByDate(plans) {
+    function groupWeekPlans(plans) {
       const grouped = {};
-      plans.forEach(plan => {
-        const key = typeof plan.date === "string" ? plan.date.slice(0, 10) : formatDateKey(new Date(plan.date));
+      for (const plan of plans) {
+        const key = String(plan.date).slice(0, 10);
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push(plan);
-      });
+      }
       return grouped;
     }
 
-    async function loadPlanner() {
-      const studentCode = document.getElementById("studentCode").value.trim();
-      messageEl.textContent = "";
-      resultArea.classList.add("hidden");
-
-      if (!studentCode) {
-        messageEl.textContent = "학생코드를 입력해 주세요.";
+    function renderWeekPlans(plans, targetEl) {
+      if (!plans || plans.length === 0) {
+        targetEl.innerHTML = `<div class="empty-box">이번 주 등록된 플랜이 없습니다.</div>`;
         return;
       }
 
-      try {
-        const url = `${API_URL}?type=student&studentCode=${encodeURIComponent(studentCode)}`;
-        const res = await fetch(url);
-        const data = await res.json();
+      const grouped = groupWeekPlans(plans);
+      const sortedDates = Object.keys(grouped).sort();
 
-        if (!data.success) {
-          messageEl.textContent = data.message || "조회에 실패했습니다.";
-          return;
-        }
-
-        currentStudent = data.student;
-        const planners = data.planners || [];
-
-        studentInfoEl.innerHTML = `
-          학생명: ${data.student.name || "-"}<br>
-          학생코드: ${data.student.code || "-"}<br>
-          담당선생님: ${data.student.teacherName || "-"}
-        `;
-
-        const todayKey = formatDateKey(new Date());
-        currentTodayPlans = planners.filter(plan => {
-          const d = String(plan.date).slice(0, 10);
-          return d === todayKey;
-        });
-
-        if (currentTodayPlans.length === 0) {
-          todayPlansEl.innerHTML = `<div class="empty">오늘 등록된 플랜이 없습니다.</div>`;
-        } else {
-          todayPlansEl.innerHTML = currentTodayPlans.map(renderPlanItem).join("");
-        }
-
-        const { monday, sunday } = getWeekRange();
-        const weekPlans = planners.filter(plan => {
-          const d = normalizeDate(plan.date);
-          return d && d >= monday && d <= sunday;
-        });
-
-        if (weekPlans.length === 0) {
-          weekPlansEl.innerHTML = `<div class="empty">이번 주 등록된 플랜이 없습니다.</div>`;
-        } else {
-          const grouped = groupByDate(weekPlans);
-          const sortedDates = Object.keys(grouped).sort();
-
-          weekPlansEl.innerHTML = sortedDates.map(date => `
-            <div class="date-group">
-              <div class="date-title">${date}</div>
-              ${grouped[date].map(renderPlanItem).join("")}
-            </div>
-          `).join("");
-        }
-
-        resultArea.classList.remove("hidden");
-      } catch (err) {
-        messageEl.textContent = "불러오는 중 오류가 발생했습니다.";
-      }
+      targetEl.innerHTML = sortedDates.map(date => `
+        <div class="week-group">
+          <div class="week-date">${escapeHtml(date)}</div>
+          <div class="plan-list">
+            ${grouped[date].map(renderPlanItem).join("")}
+          </div>
+        </div>
+      `).join("");
     }
 
-    async function copyTodayPlans() {
-      if (!currentStudent) return;
-
-      let text = `[오늘의 플랜]\n학생명: ${currentStudent.name}\n학생코드: ${currentStudent.code}\n\n`;
-
-      if (currentTodayPlans.length === 0) {
-        text += "오늘 등록된 플랜이 없습니다.";
-      } else {
-        text += currentTodayPlans.map((plan, i) =>
-          `${i + 1}. ${plan.content}${plan.subject ? ` (${plan.subject})` : ""}${plan.status ? ` - ${plan.status}` : ""}`
-        ).join("\n");
+    function buildTodayText(student, todayPlans) {
+      let text = `[오늘의 플랜]\n`;
+      text += `학생명: ${student.name}\n`;
+      text += `학생코드: ${student.code}\n`;
+      if (student.teacherName) {
+        text += `담당선생님: ${student.teacherName}\n`;
       }
+      text += `\n`;
 
+      if (!todayPlans || todayPlans.length === 0) {
+        text += `오늘 등록된 플랜이 없습니다.`;
+      } else {
+        text += todayPlans.map((plan, idx) => {
+          let line = `${idx + 1}. ${plan.content}`;
+          if (plan.subject) line += ` (${plan.subject})`;
+          if (plan.status) line += ` - ${plan.status}`;
+          return line;
+        }).join("\n");
+      }
+      return text;
+    }
+
+    async function copyText(text, successMsg = "복사되었습니다.") {
       try {
         await navigator.clipboard.writeText(text);
-        alert("오늘 플랜이 복사되었습니다.");
+        alert(successMsg);
       } catch (e) {
         alert("복사에 실패했습니다.");
       }
     }
 
-    loadBtn.addEventListener("click", loadPlanner);
-    copyTodayBtn.addEventListener("click", copyTodayPlans);
-    window.addEventListener("load", () => {
-  const params = new URLSearchParams(window.location.search);
-  const studentCode = params.get("studentCode");
-  if (studentCode) {
-    document.getElementById("studentCode").value = studentCode;
-    loadPlanner();
-  }
-});
+    function showOnly(viewName) {
+      landingView.classList.add("hidden");
+      studentView.classList.add("hidden");
+      teacherView.classList.add("hidden");
+
+      if (viewName === "landing") landingView.classList.remove("hidden");
+      if (viewName === "student") studentView.classList.remove("hidden");
+      if (viewName === "teacher") teacherView.classList.remove("hidden");
+    }
+
+    function clearSession() {
+      currentSession = null;
+      currentStudentData = null;
+      currentTeacherStudentCode = null;
+      localStorage.removeItem("plannerSession");
+    }
+
+    function saveSession(session) {
+      currentSession = session;
+      localStorage.setItem("plannerSession", JSON.stringify(session));
+    }
+
+    async function enterCode() {
+      const code = codeInput.value.trim();
+      landingMsg.textContent = "";
+
+      if (!code) {
+        landingMsg.textContent = "코드를 입력해 주세요.";
+        return;
+      }
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "enterCode",
+            code
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          landingMsg.textContent = data.message || "조회 실패";
+          return;
+        }
+
+        saveSession(data);
+
+        if (data.mode === "student") {
+          await loadStudentView(data.student.code);
+        } else if (data.mode === "teacher") {
+          await loadTeacherView(data.teacher);
+        } else {
+          landingMsg.textContent = "알 수 없는 접근 유형입니다.";
+        }
+      } catch (e) {
+        landingMsg.textContent = "접속 중 오류가 발생했습니다.";
+      }
+    }
+
+    async function fetchStudentPlanner(studentCode) {
+      const res = await fetch(`${API_URL}?action=studentPlanner&studentCode=${encodeURIComponent(studentCode)}`);
+      return await res.json();
+    }
+
+    function splitTodayAndWeek(planners) {
+      const todayKey = getTodayKey();
+      const { monday, sunday } = getWeekRange();
+
+      const todayPlans = planners.filter(plan => String(plan.date).slice(0, 10) === todayKey);
+
+      const weekPlans = planners.filter(plan => {
+        const d = normalizeDate(plan.date);
+        return d && d >= monday && d <= sunday;
+      });
+
+      return { todayPlans, weekPlans };
+    }
+
+    async function loadStudentView(studentCode) {
+      const data = await fetchStudentPlanner(studentCode);
+
+      if (!data.success) {
+        alert(data.message || "학생 정보를 불러오지 못했습니다.");
+        return;
+      }
+
+      currentStudentData = data;
+
+      const { todayPlans, weekPlans } = splitTodayAndWeek(data.planners || []);
+
+      studentInfoBox.innerHTML = `
+        <div><span>학생명</span> ${escapeHtml(data.student.name || "-")}</div>
+        <div><span>학생코드</span> ${escapeHtml(data.student.code || "-")}</div>
+        <div><span>담당선생님</span> ${escapeHtml(data.student.teacherName || "-")}</div>
+      `;
+
+      if (todayPlans.length === 0) {
+        todayPlanBox.innerHTML = `<div class="empty-box">오늘 등록된 플랜이 없습니다.</div>`;
+      } else {
+        todayPlanBox.innerHTML = todayPlans.map(renderPlanItem).join("");
+      }
+
+      renderWeekPlans(weekPlans, weekPlanBox);
+      showOnly("student");
+    }
+
+    async function loadTeacherView(teacher) {
+      teacherHeaderTitle.textContent = `${teacher.name} 선생님`;
+      teacherHeaderSub.textContent = `${teacher.role} · 담당 학생 목록`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=teacherStudents&teacherId=${encodeURIComponent(teacher.id)}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          teacherStudentList.innerHTML = `<div class="empty-box">${escapeHtml(data.message || "학생 목록을 불러오지 못했습니다.")}</div>`;
+          showOnly("teacher");
+          return;
+        }
+
+        if (!data.students || data.students.length === 0) {
+          teacherStudentList.innerHTML = `<div class="empty-box">담당 학생이 없습니다.</div>`;
+        } else {
+          teacherStudentList.innerHTML = data.students.map(student => `
+            <div class="student-card ${currentTeacherStudentCode === student.code ? 'active' : ''}" data-student-code="${escapeHtml(student.code)}">
+              <div class="student-name">${escapeHtml(student.name)}</div>
+              <div class="student-code">${escapeHtml(student.code)}</div>
+            </div>
+          `).join("");
+
+          document.querySelectorAll(".student-card").forEach(card => {
+            card.addEventListener("click", async () => {
+              const studentCode = card.getAttribute("data-student-code");
+              currentTeacherStudentCode = studentCode;
+              await loadTeacherStudentPlanner(studentCode);
+              await loadTeacherView(teacher);
+            });
+          });
+        }
+
+        showOnly("teacher");
+      } catch (e) {
+        teacherStudentList.innerHTML = `<div class="empty-box">학생 목록을 불러오는 중 오류가 발생했습니다.</div>`;
+        showOnly("teacher");
+      }
+    }
+
+    async function loadTeacherStudentPlanner(studentCode) {
+      const data = await fetchStudentPlanner(studentCode);
+
+      if (!data.success) {
+        alert(data.message || "학생 플래너를 불러오지 못했습니다.");
+        return;
+      }
+
+      currentStudentData = data;
+      currentTeacherStudentCode = studentCode;
+
+      const { todayPlans, weekPlans } = splitTodayAndWeek(data.planners || []);
+
+      teacherSelectedInfo.textContent = `${data.student.name} · ${data.student.code}`;
+
+      teacherStudentInfoBox.innerHTML = `
+        <div><span>학생명</span> ${escapeHtml(data.student.name || "-")}</div>
+        <div><span>학생코드</span> ${escapeHtml(data.student.code || "-")}</div>
+        <div><span>담당선생님</span> ${escapeHtml(data.student.teacherName || "-")}</div>
+      `;
+
+      if (todayPlans.length === 0) {
+        teacherTodayPlanBox.innerHTML = `<div class="empty-box">오늘 등록된 플랜이 없습니다.</div>`;
+      } else {
+        teacherTodayPlanBox.innerHTML = todayPlans.map(renderPlanItem).join("");
+      }
+
+      renderWeekPlans(weekPlans, teacherWeekPlanBox);
+
+      teacherPlannerEmpty.classList.add("hidden");
+      teacherPlannerDetail.classList.remove("hidden");
+    }
+
+    async function copyStudentTodayPlans() {
+      if (!currentStudentData) return;
+      const { todayPlans } = splitTodayAndWeek(currentStudentData.planners || []);
+      const text = buildTodayText(currentStudentData.student, todayPlans);
+      await copyText(text, "오늘 플랜이 복사되었습니다.");
+    }
+
+    async function copyTeacherSelectedStudentCode() {
+      if (!currentStudentData) return;
+      await copyText(currentStudentData.student.code, "학생코드가 복사되었습니다.");
+    }
+
+    function goHome() {
+      clearSession();
+      codeInput.value = "";
+      landingMsg.textContent = "";
+      teacherPlannerDetail.classList.add("hidden");
+      teacherPlannerEmpty.classList.remove("hidden");
+      teacherStudentList.innerHTML = "";
+      showOnly("landing");
+    }
+
+    enterBtn.addEventListener("click", enterCode);
+    codeInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") enterCode();
+    });
+
+    copyTodayBtn.addEventListener("click", copyStudentTodayPlans);
+    teacherCopyTodayBtn.addEventListener("click", copyStudentTodayPlans);
+    teacherCopyStudentCodeBtn.addEventListener("click", copyTeacherSelectedStudentCode);
+
+    studentLogoutBtn.addEventListener("click", goHome);
+    teacherLogoutBtn.addEventListener("click", goHome);
+
+    window.addEventListener("load", async () => {
+      const saved = localStorage.getItem("plannerSession");
+      if (!saved) {
+        showOnly("landing");
+        return;
+      }
+
+      try {
+        const session = JSON.parse(saved);
+        currentSession = session;
+
+        if (session.mode === "student" && session.student?.code) {
+          await loadStudentView(session.student.code);
+          return;
+        }
+
+        if (session.mode === "teacher" && session.teacher?.id) {
+          await loadTeacherView(session.teacher);
+          return;
+        }
+
+        showOnly("landing");
+      } catch (e) {
+        showOnly("landing");
+      }
+    });
   </script>
 </body>
 </html>
