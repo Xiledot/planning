@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>학생 플래너</title>
+  <script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js"></script>
   <style>
     * { box-sizing: border-box; }
     :root{
@@ -35,18 +36,9 @@
       background-size: 34px 34px;
     }
 
-    .page {
-      min-height: 100vh;
-      padding: 28px 16px 60px;
-    }
-
-    .container {
-      max-width: 1120px;
-      margin: 0 auto;
-    }
-
+    .page { min-height: 100vh; padding: 28px 16px 60px; }
+    .container { max-width: 1180px; margin: 0 auto; }
     .hidden { display: none !important; }
-
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -61,558 +53,203 @@
       justify-content: center;
     }
 
-    .landing-card {
-      width: 100%;
-      max-width: 620px;
-      padding: 34px 30px 28px;
-    }
-
+    .landing-card { width: 100%; max-width: 620px; padding: 34px 30px 28px; }
     .eyebrow {
-      text-align: center;
-      letter-spacing: 6px;
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--red);
-      margin-bottom: 16px;
+      text-align: center; letter-spacing: 6px; font-size: 14px; font-weight: 800;
+      color: var(--red); margin-bottom: 16px;
     }
-
     .hero-title {
-      text-align: center;
-      font-size: 58px;
-      line-height: 1;
-      margin: 0 0 18px;
-      font-weight: 900;
-      color: var(--navy);
+      text-align: center; font-size: 58px; line-height: 1; margin: 0 0 18px;
+      font-weight: 900; color: var(--navy);
     }
-
-    .hero-title .accent {
-      color: var(--red);
-    }
-
+    .hero-title .accent { color: var(--red); }
     .hero-line {
-      width: 76px;
-      height: 4px;
-      border-radius: 999px;
-      background: var(--red);
+      width: 76px; height: 4px; border-radius: 999px; background: var(--red);
       margin: 0 auto 28px;
     }
-
-    .hero-desc {
-      text-align: center;
-      color: var(--muted);
-      font-size: 18px;
-      margin-bottom: 28px;
-    }
-
+    .hero-desc { text-align: center; color: var(--muted); font-size: 18px; margin-bottom: 28px; }
     .code-input {
-      width: 100%;
-      height: 68px;
-      border: 2px solid #ddd4c6;
-      border-radius: 18px;
-      background: #f4efe6;
-      padding: 0 18px;
-      font-size: 26px;
-      text-align: center;
-      color: #5b5348;
-      outline: none;
+      width: 100%; height: 68px; border: 2px solid #ddd4c6; border-radius: 18px;
+      background: #f4efe6; padding: 0 18px; font-size: 26px; text-align: center;
+      color: #5b5348; outline: none;
     }
-
     .main-btn {
-      width: 100%;
-      height: 68px;
-      border: none;
-      border-radius: 18px;
-      margin-top: 16px;
-      background: var(--navy);
-      color: white;
-      font-size: 28px;
-      font-weight: 900;
-      cursor: pointer;
+      width: 100%; height: 68px; border: none; border-radius: 18px; margin-top: 16px;
+      background: var(--navy); color: white; font-size: 28px; font-weight: 900; cursor: pointer;
     }
-
-    .guide {
-      margin-top: 20px;
-      text-align: center;
-      color: #ad9b84;
-      font-size: 16px;
-      line-height: 1.6;
+    .main-btn:disabled, .ghost-btn:disabled, .soft-btn:disabled, .outline-btn:disabled {
+      opacity: .6; cursor: default;
     }
-
-    .msg {
-      margin-top: 14px;
-      text-align: center;
-      color: var(--red);
-      font-size: 15px;
-    }
+    .guide { margin-top: 20px; text-align: center; color: #ad9b84; font-size: 16px; line-height: 1.6; }
+    .msg { margin-top: 14px; text-align: center; color: var(--red); font-size: 15px; }
 
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 22px;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px;
     }
+    .topbar-left h2 { margin: 0; font-size: 30px; font-weight: 900; }
+    .topbar-left p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-    .topbar-left h2 {
-      margin: 0;
-      font-size: 30px;
-      font-weight: 900;
+    .ghost-btn, .soft-btn, .outline-btn {
+      border: 1px solid var(--border); border-radius: 15px; height: 46px; padding: 0 16px;
+      cursor: pointer; font-size: 15px; font-weight: 800; background: #efe9dc; color: var(--navy);
     }
+    .soft-btn { background: var(--soft-blue); border-color: #ccd7ff; color: var(--blue); }
+    .outline-btn { background: #fffdfa; }
 
-    .topbar-left p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .top-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .ghost-btn,
-    .soft-btn,
-    .danger-btn,
-    .outline-btn {
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      height: 46px;
-      padding: 0 16px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 800;
-      background: #efe9dc;
-      color: var(--navy);
-    }
-
-    .soft-btn {
-      background: var(--soft-blue);
-      border-color: #ccd7ff;
-      color: var(--blue);
-    }
-
-    .danger-btn {
-      background: var(--soft-red);
-      border-color: #efc6bf;
-      color: #d65b49;
-    }
-
-    .outline-btn {
-      background: #fffdfa;
-    }
-
-    .panel {
-      padding: 22px;
-      margin-bottom: 18px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 18px;
-    }
-
-    .section-title {
-      font-size: 24px;
-      font-weight: 900;
-      margin: 0 0 16px;
-    }
-
-    .info-lines {
-      line-height: 1.9;
-      font-size: 18px;
-    }
-
-    .info-lines span {
-      color: var(--muted);
-      display: inline-block;
-      min-width: 92px;
-    }
-
-    .plan-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
+    .panel { padding: 22px; margin-bottom: 18px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1.2fr; gap: 18px; }
+    .section-title { font-size: 24px; font-weight: 900; margin: 0 0 16px; }
+    .info-lines { line-height: 1.9; font-size: 18px; }
+    .info-lines span { color: var(--muted); display: inline-block; min-width: 92px; }
+    .plan-list { display: flex; flex-direction: column; gap: 12px; }
     .plan-item {
-      border: 1px solid #e3dacc;
-      background: #fff;
-      border-radius: 18px;
-      padding: 14px;
+      border: 1px solid #e3dacc; background: #fff; border-radius: 18px; padding: 14px;
     }
-
     .plan-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;
     }
-
-    .plan-left-meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
+    .plan-left-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .badge-subject, .badge-category, .badge-status {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 13px; font-weight: 900;
     }
-
-    .badge-subject,
-    .badge-category,
-    .badge-status {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .badge-subject {
-      background: var(--soft-blue);
-      color: var(--blue);
-    }
-
-    .badge-category {
-      background: #f5efe7;
-      color: #7b6a54;
-    }
-
-    .badge-status.status-done {
-      background: var(--soft-green);
-      color: #247241;
-    }
-    .badge-status.status-wait {
-      background: var(--soft-orange);
-      color: #b66b00;
-    }
-    .badge-status.status-adjust {
-      background: #f3eaff;
-      color: #7040c9;
-    }
-    .badge-status.status-none {
-      background: #edf0f4;
-      color: #647085;
-    }
-
-    .plan-content {
-      font-size: 18px;
-      font-weight: 900;
-      margin-bottom: 6px;
-    }
-
-    .plan-sub {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .plan-memo {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
+    .badge-subject { background: var(--soft-blue); color: var(--blue); }
+    .badge-category { background: #f5efe7; color: #7b6a54; }
+    .badge-status.status-done { background: var(--soft-green); color: #247241; }
+    .badge-status.status-wait { background: var(--soft-orange); color: #b66b00; }
+    .badge-status.status-adjust { background: #f3eaff; color: #7040c9; }
+    .badge-status.status-none { background: #edf0f4; color: #647085; }
+    .plan-content { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+    .plan-sub { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+    .plan-memo { color: var(--muted); font-size: 14px; }
     .empty-box {
-      border: 1px dashed #d8cebe;
-      border-radius: 18px;
-      padding: 18px;
-      text-align: center;
-      color: var(--muted);
-      background: #fffdfa;
+      border: 1px dashed #d8cebe; border-radius: 18px; padding: 18px; text-align: center;
+      color: var(--muted); background: #fffdfa;
     }
+    .week-group { margin-bottom: 18px; }
+    .week-date { font-size: 16px; font-weight: 900; margin-bottom: 10px; color: #5f564c; }
 
-    .week-group {
-      margin-bottom: 18px;
-    }
-
-    .week-date {
-      font-size: 16px;
-      font-weight: 900;
-      margin-bottom: 10px;
-      color: #5f564c;
-    }
-
-    .teacher-layout {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 18px;
-    }
-
-    .student-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
+    .teacher-layout { display: grid; grid-template-columns: 340px 1fr; gap: 18px; }
+    .student-list { display: flex; flex-direction: column; gap: 12px; }
     .student-card {
-      border: 1px solid #ded4c6;
-      border-radius: 20px;
-      background: white;
-      padding: 16px;
-      cursor: pointer;
+      border: 1px solid #ded4c6; border-radius: 20px; background: white; padding: 16px; cursor: pointer;
       transition: 0.15s ease;
     }
-
-    .student-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-    }
-
-    .student-card.active {
-      border-color: #9bb2ff;
-      background: #f6f8ff;
-    }
-
-    .student-name {
-      font-size: 22px;
-      font-weight: 900;
-      margin-bottom: 6px;
-    }
-
-    .student-code {
-      color: var(--muted);
-      font-size: 16px;
-    }
-
+    .student-card:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+    .student-card.active { border-color: #9bb2ff; background: #f6f8ff; }
+    .student-name { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+    .student-code { color: var(--muted); font-size: 16px; }
     .teacher-right-placeholder {
-      height: 100%;
-      min-height: 340px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: var(--muted);
-      padding: 24px;
+      height: 100%; min-height: 340px; display: flex; align-items: center; justify-content: center;
+      text-align: center; color: var(--muted); padding: 24px;
     }
-
-    .mini-title {
-      font-size: 20px;
-      font-weight: 900;
-      margin: 0 0 12px;
-    }
-
+    .mini-title { font-size: 20px; font-weight: 900; margin: 0 0 12px; }
     .toolbar {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap;
     }
-
-    .toolbar-left {
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    .toolbar-right {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .toolbar-left { color: var(--muted); font-size: 15px; }
+    .toolbar-right { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .planner-form {
-      border: 1px solid #e2d8ca;
-      background: #fffdfa;
-      border-radius: 20px;
-      padding: 18px;
+      border: 1px solid #e2d8ca; background: #fffdfa; border-radius: 20px; padding: 18px;
     }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-field { display: flex; flex-direction: column; gap: 8px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { font-size: 14px; font-weight: 800; color: #7d705e; }
+    .form-field input, .form-field select {
+      width: 100%; min-height: 50px; border: 1px solid #ddd2c2; background: #fff; border-radius: 14px;
+      padding: 0 14px; font-size: 16px; outline: none; color: #2f2b27;
     }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-field.full {
-      grid-column: 1 / -1;
-    }
-
-    .form-field label {
-      font-size: 14px;
-      font-weight: 800;
-      color: #7d705e;
-    }
-
-    .form-field input,
-    .form-field select {
-      width: 100%;
-      height: 50px;
-      border: 1px solid #ddd2c2;
-      background: #fff;
-      border-radius: 14px;
-      padding: 0 14px;
-      font-size: 16px;
-      outline: none;
-      color: #2f2b27;
-    }
-
     .main-add-btn {
-      width: 100%;
-      height: 54px;
-      margin-top: 16px;
-      border: none;
-      border-radius: 16px;
-      background: var(--navy);
-      color: #fff;
-      font-size: 18px;
-      font-weight: 900;
-      cursor: pointer;
+      width: 100%; height: 54px; margin-top: 16px; border: none; border-radius: 16px;
+      background: var(--navy); color: #fff; font-size: 18px; font-weight: 900; cursor: pointer;
     }
-
-    .form-msg {
-      margin-top: 10px;
-      font-size: 14px;
-      color: var(--red);
-    }
-
-    .form-msg.success {
-      color: #247241;
-    }
-
-    .category-note {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
+    .form-msg { margin-top: 10px; font-size: 14px; color: var(--red); }
+    .form-msg.success { color: #247241; }
+    .category-note { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
     .curriculum-box {
-      margin-top: 18px;
-      padding: 16px;
-      border: 1px dashed #d9cfbe;
-      border-radius: 18px;
-      background: #fffdfa;
+      margin-top: 18px; padding: 16px; border: 1px dashed #d9cfbe; border-radius: 18px; background: #fffdfa;
     }
+    .curriculum-box-title { font-weight: 900; margin-bottom: 8px; font-size: 18px; }
+    .curriculum-box-desc { color: var(--muted); line-height: 1.7; font-size: 14px; }
 
-    .curriculum-box-title {
-      font-weight: 900;
-      margin-bottom: 8px;
-      font-size: 18px;
+    .checklist {
+      margin-top: 12px; border: 1px solid #e2d8ca; border-radius: 16px; padding: 12px; background: #fff;
+      max-height: 280px; overflow: auto;
     }
-
-    .curriculum-box-desc {
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
+    .check-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 6px; border-bottom: 1px solid #f0ebe2; }
+    .check-item:last-child { border-bottom: none; }
+    .check-item input { width: 18px; height: 18px; margin-top: 2px; }
+    .check-main { font-weight: 800; }
+    .check-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+    .inline-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .small-chip {
+      border: 1px solid #d8d1c6; background: #fff; color: #695e4e; border-radius: 999px;
+      padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: pointer;
     }
+    .small-chip.active { background: var(--soft-blue); border-color: #b9c9ff; color: var(--blue); }
 
     .loading-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(243, 239, 230, 0.72);
-      backdrop-filter: blur(2px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(34,28,20,0.28); display: none; align-items: center; justify-content: center;
+      z-index: 9999; padding: 20px;
     }
-
-    .loading-overlay.show {
-      display: flex;
-    }
-
+    .loading-overlay.show { display: flex; }
     .loading-card {
-      background: #fffdfa;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 22px 26px;
-      min-width: 220px;
-      text-align: center;
+      min-width: 220px; max-width: 92vw; background: white; border-radius: 22px; padding: 24px 22px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.18); text-align: center;
     }
-
     .spinner {
-      width: 34px;
-      height: 34px;
-      margin: 0 auto 12px;
-      border-radius: 50%;
-      border: 4px solid #d8deef;
-      border-top-color: var(--navy);
-      animation: spin 0.8s linear infinite;
+      width: 42px; height: 42px; margin: 0 auto 14px; border: 4px solid #e8e3d8;
+      border-top-color: var(--navy); border-radius: 50%; animation: spin 0.9s linear infinite;
     }
+    .loading-text { font-weight: 900; font-size: 18px; }
+    .loading-sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .loading-text {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--navy);
+    .image-card {
+      width: 760px; background: #fffdf9; border: 2px solid #e4dac9; border-radius: 28px; padding: 28px;
+      color: #2f2b27; font-family: Arial, sans-serif;
     }
-
-    .is-loading {
-      opacity: 0.65;
-      pointer-events: none;
+    .image-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+    .image-title { font-size: 34px; font-weight: 900; color: var(--navy); }
+    .image-meta { color: var(--muted); font-size: 18px; line-height: 1.7; }
+    .image-badge {
+      display: inline-block; padding: 8px 14px; background: #f4efe6; border-radius: 999px; font-weight: 900; font-size: 14px;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    .image-items { display: flex; flex-direction: column; gap: 12px; }
+    .image-item { border: 1px solid #eadfce; border-radius: 18px; padding: 14px; background: white; }
+    .image-item-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .image-item-content { font-size: 22px; font-weight: 900; }
+    .image-footer { margin-top: 18px; color: var(--muted); font-size: 15px; }
 
     @media (max-width: 900px) {
-      .teacher-layout {
-        grid-template-columns: 1fr;
-      }
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
+      .teacher-layout, .grid-2 { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 640px) {
-      .landing-card {
-        padding: 26px 18px 22px;
-      }
-      .hero-title {
-        font-size: 44px;
-      }
-      .code-input {
-        font-size: 22px;
-      }
-      .main-btn {
-        font-size: 24px;
-      }
-      .topbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .top-actions {
-        width: 100%;
-      }
-      .ghost-btn,
-      .soft-btn,
-      .danger-btn,
-      .outline-btn {
-        flex: 1;
-      }
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+      .landing-card { padding: 26px 18px 22px; }
+      .hero-title { font-size: 44px; }
+      .code-input { font-size: 22px; }
+      .main-btn { font-size: 24px; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .top-actions { width: 100%; }
+      .ghost-btn, .soft-btn, .outline-btn { flex: 1; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="page">
     <div class="container">
-
       <div id="landingView" class="landing-wrap">
         <div class="landing-card card">
           <div class="eyebrow">STUDENT PLANNER</div>
           <h1 class="hero-title">플래너 <span class="accent">입장</span></h1>
           <div class="hero-line"></div>
           <div class="hero-desc">학생코드 또는 선생님 로그인코드를 입력하세요</div>
-
           <input id="codeInput" class="code-input" type="text" placeholder="코드 입력..." />
           <button id="enterBtn" class="main-btn">입장하기</button>
-          <div class="guide">
-            학생은 학생코드로,<br>
-            선생님은 로그인코드로 접속합니다.
-          </div>
+          <div class="guide">학생은 학생코드로,<br>선생님은 로그인코드로 접속합니다.</div>
           <div id="landingMsg" class="msg"></div>
         </div>
       </div>
@@ -625,6 +262,8 @@
           </div>
           <div class="top-actions">
             <button id="copyTodayBtn" class="soft-btn">오늘 플랜 복사</button>
+            <button id="copyTodayImageBtn" class="soft-btn">이미지 복사</button>
+            <button id="downloadTodayImageBtn" class="outline-btn">이미지 저장</button>
             <button id="studentLogoutBtn" class="ghost-btn">처음으로</button>
           </div>
         </div>
@@ -634,7 +273,6 @@
             <div class="section-title">학생 정보</div>
             <div id="studentInfoBox" class="info-lines"></div>
           </div>
-
           <div class="panel card">
             <div class="section-title">오늘 플랜</div>
             <div id="todayPlanBox" class="plan-list"></div>
@@ -678,6 +316,8 @@
                 <div class="toolbar-right">
                   <button id="teacherCopyStudentCodeBtn" class="soft-btn">학생코드 복사</button>
                   <button id="teacherCopyTodayBtn" class="soft-btn">오늘 플랜 복사</button>
+                  <button id="teacherCopyTodayImageBtn" class="soft-btn">이미지 복사</button>
+                  <button id="teacherDownloadTodayImageBtn" class="outline-btn">이미지 저장</button>
                 </div>
               </div>
 
@@ -693,15 +333,13 @@
               </div>
 
               <div style="margin-top:18px;">
-                <div class="section-title">직접 플래너 추가</div>
-
+                <div class="section-title">플래너 추가</div>
                 <div class="planner-form">
                   <div class="form-grid">
                     <div class="form-field">
                       <label>날짜</label>
                       <input type="date" id="plannerDateInput">
                     </div>
-
                     <div class="form-field">
                       <label>분류</label>
                       <select id="plannerCategoryInput">
@@ -714,12 +352,43 @@
                         <option value="모의고사">모의고사</option>
                       </select>
                     </div>
+                  </div>
 
+                  <div id="manualSection" style="margin-top:14px;">
                     <div class="form-field full">
                       <label>학습내용</label>
                       <input type="text" id="plannerContentInput" placeholder="예: 구문독해 3강">
                     </div>
+                    <div class="category-note">직접 입력은 기타 / 단어 / 듣기만 가능합니다.</div>
+                  </div>
 
+                  <div id="curriculumSection" class="hidden" style="margin-top:14px;">
+                    <div class="form-grid">
+                      <div class="form-field">
+                        <label>커리큘럼</label>
+                        <select id="curriculumSelect">
+                          <option value="">커리큘럼 선택</option>
+                        </select>
+                      </div>
+                      <div class="form-field">
+                        <label>단원/강차</label>
+                        <select id="unitSelect">
+                          <option value="">단원/강차 선택</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="inline-actions">
+                      <button id="selectDefaultsBtn" type="button" class="small-chip">기본 선택</button>
+                      <button id="selectAllBtn" type="button" class="small-chip">전체 선택</button>
+                      <button id="clearAllBtn" type="button" class="small-chip">전체 해제</button>
+                    </div>
+                    <div id="curriculumItemsWrap" class="checklist">
+                      <div class="empty-box">커리큘럼과 단원/강차를 선택하면 항목이 표시됩니다.</div>
+                    </div>
+                    <div class="category-note">정규 / 내신 / 부교재 / 모의고사는 선택형으로 등록됩니다.</div>
+                  </div>
+
+                  <div class="form-grid" style="margin-top:14px;">
                     <div class="form-field">
                       <label>상태</label>
                       <select id="plannerStatusInput">
@@ -729,28 +398,14 @@
                         <option value="학습 없음">학습 없음</option>
                       </select>
                     </div>
-
                     <div class="form-field full">
                       <label>메모</label>
                       <input type="text" id="plannerMemoInput" placeholder="예: 재시험 필요 없음">
                     </div>
                   </div>
 
-                  <div class="category-note">
-                    지금 직접 추가 가능한 분류는 <b>기타 / 단어 / 듣기</b>만 가능합니다.<br>
-                    정규 / 내신 / 부교재 / 모의고사는 다음 단계에서 커리큘럼 선택형으로 연결됩니다.
-                  </div>
-
                   <button id="addPlannerBtn" class="main-add-btn">플래너 추가</button>
                   <div id="plannerAddMsg" class="form-msg"></div>
-                </div>
-
-                <div class="curriculum-box">
-                  <div class="curriculum-box-title">다음 단계 예정</div>
-                  <div class="curriculum-box-desc">
-                    정규 / 내신 / 부교재 / 모의고사는 커리큘럼목록 + 커리큘럼구성항목 시트를 읽어서<br>
-                    드롭다운 + 체크박스 방식으로 등록되게 바꿀 예정입니다.
-                  </div>
                 </div>
               </div>
 
@@ -762,24 +417,25 @@
           </div>
         </div>
       </div>
-
-      <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-card">
-          <div class="spinner"></div>
-          <div id="loadingText" class="loading-text">불러오는 중...</div>
-        </div>
-      </div>
-
     </div>
   </div>
 
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <div id="loadingText" class="loading-text">불러오는 중</div>
+      <div id="loadingSub" class="loading-sub">잠시만 기다려 주세요.</div>
+    </div>
+  </div>
+
+  <div id="imageRenderArea" class="hidden"></div>
+
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwaAG31wMEl8S7QnPNCYN3tKKmhJBVGD--J0ysxI5rLBx3-vS8gQix--qke5-jvk15LjQ/exec";
+    const API_URL = "여기에_앱스크립트_웹앱_URL_입력";
 
     const landingView = document.getElementById("landingView");
     const studentView = document.getElementById("studentView");
     const teacherView = document.getElementById("teacherView");
-
     const codeInput = document.getElementById("codeInput");
     const enterBtn = document.getElementById("enterBtn");
     const landingMsg = document.getElementById("landingMsg");
@@ -788,6 +444,8 @@
     const todayPlanBox = document.getElementById("todayPlanBox");
     const weekPlanBox = document.getElementById("weekPlanBox");
     const copyTodayBtn = document.getElementById("copyTodayBtn");
+    const copyTodayImageBtn = document.getElementById("copyTodayImageBtn");
+    const downloadTodayImageBtn = document.getElementById("downloadTodayImageBtn");
     const studentLogoutBtn = document.getElementById("studentLogoutBtn");
 
     const teacherHeaderTitle = document.getElementById("teacherHeaderTitle");
@@ -801,6 +459,8 @@
     const teacherWeekPlanBox = document.getElementById("teacherWeekPlanBox");
     const teacherCopyStudentCodeBtn = document.getElementById("teacherCopyStudentCodeBtn");
     const teacherCopyTodayBtn = document.getElementById("teacherCopyTodayBtn");
+    const teacherCopyTodayImageBtn = document.getElementById("teacherCopyTodayImageBtn");
+    const teacherDownloadTodayImageBtn = document.getElementById("teacherDownloadTodayImageBtn");
     const teacherLogoutBtn = document.getElementById("teacherLogoutBtn");
 
     const plannerDateInput = document.getElementById("plannerDateInput");
@@ -810,23 +470,38 @@
     const plannerMemoInput = document.getElementById("plannerMemoInput");
     const addPlannerBtn = document.getElementById("addPlannerBtn");
     const plannerAddMsg = document.getElementById("plannerAddMsg");
+
+    const manualSection = document.getElementById("manualSection");
+    const curriculumSection = document.getElementById("curriculumSection");
+    const curriculumSelect = document.getElementById("curriculumSelect");
+    const unitSelect = document.getElementById("unitSelect");
+    const curriculumItemsWrap = document.getElementById("curriculumItemsWrap");
+    const selectDefaultsBtn = document.getElementById("selectDefaultsBtn");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+
     const loadingOverlay = document.getElementById("loadingOverlay");
     const loadingText = document.getElementById("loadingText");
+    const loadingSub = document.getElementById("loadingSub");
+    const imageRenderArea = document.getElementById("imageRenderArea");
 
     let currentSession = null;
     let currentStudentData = null;
     let currentTeacherStudentCode = null;
+    let currentCurriculumItems = [];
 
+    function startLoading(text = "불러오는 중", sub = "잠시만 기다려 주세요.") {
+      loadingText.textContent = text;
+      loadingSub.textContent = sub;
+      loadingOverlay.classList.add("show");
+      enterBtn.disabled = true;
+      addPlannerBtn.disabled = true;
+    }
 
-    function setLoading(show, text = "불러오는 중...") {
-      if (show) {
-        loadingText.textContent = text;
-        loadingOverlay.classList.add("show");
-        document.body.classList.add("is-loading");
-      } else {
-        loadingOverlay.classList.remove("show");
-        document.body.classList.remove("is-loading");
-      }
+    function stopLoading() {
+      loadingOverlay.classList.remove("show");
+      enterBtn.disabled = false;
+      addPlannerBtn.disabled = false;
     }
 
     function formatDateKey(date) {
@@ -836,23 +511,18 @@
       return `${y}-${m}-${d}`;
     }
 
-    function getTodayKey() {
-      return formatDateKey(new Date());
-    }
+    function getTodayKey() { return formatDateKey(new Date()); }
 
     function getWeekRange() {
       const today = new Date();
       const day = today.getDay();
       const mondayDiff = day === 0 ? -6 : 1 - day;
-
       const monday = new Date(today);
       monday.setDate(today.getDate() + mondayDiff);
       monday.setHours(0, 0, 0, 0);
-
       const sunday = new Date(monday);
       sunday.setDate(monday.getDate() + 6);
       sunday.setHours(23, 59, 59, 999);
-
       return { monday, sunday };
     }
 
@@ -885,15 +555,14 @@
           <div class="plan-head">
             <div class="plan-left-meta">
               <div class="badge-category">${escapeHtml(plan.category || "-")}</div>
-              ${plan.curriculumName ? `<div class="badge-subject">${escapeHtml(plan.curriculumName)}</div>` : ''}
+              ${plan.curriculumName ? `<div class="badge-subject">${escapeHtml(plan.curriculumName)}</div>` : ""}
             </div>
             <div class="badge-status ${getStatusClass(plan.status)}">${escapeHtml(plan.status || "-")}</div>
           </div>
-          ${plan.unitOrLecture ? `<div class="plan-sub">${escapeHtml(plan.unitOrLecture)}</div>` : ''}
+          ${plan.unitOrLecture ? `<div class="plan-sub">${escapeHtml(plan.unitOrLecture)}</div>` : ""}
           <div class="plan-content">${escapeHtml(plan.content || "-")}</div>
           ${plan.memo ? `<div class="plan-memo">메모: ${escapeHtml(plan.memo)}</div>` : ""}
-        </div>
-      `;
+        </div>`;
     }
 
     function groupWeekPlans(plans) {
@@ -911,57 +580,38 @@
         targetEl.innerHTML = `<div class="empty-box">이번 주 등록된 플랜이 없습니다.</div>`;
         return;
       }
-
       const grouped = groupWeekPlans(plans);
       const sortedDates = Object.keys(grouped).sort();
-
       targetEl.innerHTML = sortedDates.map(date => `
         <div class="week-group">
           <div class="week-date">${escapeHtml(date)}</div>
-          <div class="plan-list">
-            ${grouped[date].map(renderPlanItem).join("")}
-          </div>
-        </div>
-      `).join("");
+          <div class="plan-list">${grouped[date].map(renderPlanItem).join("")}</div>
+        </div>`).join("");
     }
 
     function buildTodayText(student, todayPlans) {
-      let text = `[오늘의 플랜]\n`;
-      text += `학생명: ${student.name}\n`;
-      text += `학생코드: ${student.code}\n`;
-      if (student.teacherName) {
-        text += `담당선생님: ${student.teacherName}\n`;
-      }
-      text += `\n`;
-
-      if (!todayPlans || todayPlans.length === 0) {
-        text += `오늘 등록된 플랜이 없습니다.`;
-      } else {
-        text += todayPlans.map((plan, idx) => {
-          let line = `${idx + 1}. `;
-          if (plan.category) line += `[${plan.category}] `;
-          line += plan.content;
-          if (plan.status) line += ` - ${plan.status}`;
-          return line;
-        }).join("\n");
-      }
-      return text;
+      let text = `[오늘의 플랜]\n학생명: ${student.name}\n학생코드: ${student.code}`;
+      if (student.teacherName) text += `\n담당선생님: ${student.teacherName}`;
+      text += `\n\n`;
+      if (!todayPlans || todayPlans.length === 0) return text + `오늘 등록된 플랜이 없습니다.`;
+      return text + todayPlans.map((plan, idx) => {
+        let line = `${idx + 1}. `;
+        if (plan.category) line += `[${plan.category}] `;
+        line += plan.content;
+        if (plan.status) line += ` - ${plan.status}`;
+        return line;
+      }).join("\n");
     }
 
     async function copyText(text, successMsg = "복사되었습니다.") {
-      try {
-        await navigator.clipboard.writeText(text);
-        alert(successMsg);
-      } catch (e) {
-        alert("복사에 실패했습니다.");
-      }
+      await navigator.clipboard.writeText(text);
+      alert(successMsg);
     }
 
     function showOnly(viewName) {
       landingView.classList.add("hidden");
       studentView.classList.add("hidden");
       teacherView.classList.add("hidden");
-
       if (viewName === "landing") landingView.classList.remove("hidden");
       if (viewName === "student") studentView.classList.remove("hidden");
       if (viewName === "teacher") teacherView.classList.remove("hidden");
@@ -971,33 +621,46 @@
       currentSession = null;
       currentStudentData = null;
       currentTeacherStudentCode = null;
+      currentCurriculumItems = [];
+      localStorage.removeItem("plannerSession");
     }
 
     function saveSession(session) {
       currentSession = session;
+      localStorage.setItem("plannerSession", JSON.stringify(session));
+    }
+
+    function splitTodayAndWeek(planners) {
+      const todayKey = getTodayKey();
+      const { monday, sunday } = getWeekRange();
+      const todayPlans = planners.filter(plan => String(plan.date).slice(0, 10) === todayKey);
+      const weekPlans = planners.filter(plan => {
+        const d = normalizeDate(plan.date);
+        return d && d >= monday && d <= sunday;
+      });
+      return { todayPlans, weekPlans };
+    }
+
+    async function apiGet(url) {
+      const res = await fetch(url);
+      return await res.json();
     }
 
     async function enterCode() {
       const code = codeInput.value.trim();
       landingMsg.textContent = "";
-
       if (!code) {
         landingMsg.textContent = "코드를 입력해 주세요.";
         return;
       }
-
-      setLoading(true, "입장 중...");
       try {
-        const res = await fetch(`${API_URL}?action=session&code=${encodeURIComponent(code)}`);
-        const data = await res.json();
-
+        startLoading("입장 중", "코드를 확인하고 있습니다.");
+        const data = await apiGet(`${API_URL}?action=session&code=${encodeURIComponent(code)}`);
         if (!data.success) {
           landingMsg.textContent = data.message || "조회 실패";
           return;
         }
-
         saveSession(data);
-
         if (data.mode === "student") {
           await loadStudentView(data.student.code);
         } else if (data.mode === "teacher") {
@@ -1008,53 +671,29 @@
       } catch (e) {
         landingMsg.textContent = "접속 중 오류가 발생했습니다.";
       } finally {
-        setLoading(false);
+        stopLoading();
       }
     }
 
     async function fetchStudentPlanner(studentCode) {
-      const res = await fetch(`${API_URL}?action=studentPlanner&studentCode=${encodeURIComponent(studentCode)}`);
-      return await res.json();
-    }
-
-    function splitTodayAndWeek(planners) {
-      const todayKey = getTodayKey();
-      const { monday, sunday } = getWeekRange();
-
-      const todayPlans = planners.filter(plan => String(plan.date).slice(0, 10) === todayKey);
-
-      const weekPlans = planners.filter(plan => {
-        const d = normalizeDate(plan.date);
-        return d && d >= monday && d <= sunday;
-      });
-
-      return { todayPlans, weekPlans };
+      return await apiGet(`${API_URL}?action=studentPlanner&studentCode=${encodeURIComponent(studentCode)}`);
     }
 
     async function loadStudentView(studentCode) {
       const data = await fetchStudentPlanner(studentCode);
-
       if (!data.success) {
         alert(data.message || "학생 정보를 불러오지 못했습니다.");
         return;
       }
-
       currentStudentData = data;
-
       const { todayPlans, weekPlans } = splitTodayAndWeek(data.planners || []);
-
       studentInfoBox.innerHTML = `
         <div><span>학생명</span> ${escapeHtml(data.student.name || "-")}</div>
         <div><span>학생코드</span> ${escapeHtml(data.student.code || "-")}</div>
-        <div><span>담당선생님</span> ${escapeHtml(data.student.teacherName || "-")}</div>
-      `;
-
-      if (todayPlans.length === 0) {
-        todayPlanBox.innerHTML = `<div class="empty-box">오늘 등록된 플랜이 없습니다.</div>`;
-      } else {
-        todayPlanBox.innerHTML = todayPlans.map(renderPlanItem).join("");
-      }
-
+        <div><span>담당선생님</span> ${escapeHtml(data.student.teacherName || "-")}</div>`;
+      todayPlanBox.innerHTML = todayPlans.length === 0
+        ? `<div class="empty-box">오늘 등록된 플랜이 없습니다.</div>`
+        : todayPlans.map(renderPlanItem).join("");
       renderWeekPlans(weekPlans, weekPlanBox);
       showOnly("student");
     }
@@ -1062,18 +701,14 @@
     async function loadTeacherView(teacher) {
       teacherHeaderTitle.textContent = `${teacher.name} 선생님`;
       teacherHeaderSub.textContent = `${teacher.role} · 담당 학생 목록`;
-
-      setLoading(true, "학생 목록 불러오는 중...");
       try {
-        const res = await fetch(`${API_URL}?action=teacherStudents&teacherId=${encodeURIComponent(teacher.id)}`);
-        const data = await res.json();
-
+        startLoading("학생 목록 불러오는 중", "담당 학생 정보를 가져오고 있습니다.");
+        const data = await apiGet(`${API_URL}?action=teacherStudents&teacherId=${encodeURIComponent(teacher.id)}`);
         if (!data.success) {
           teacherStudentList.innerHTML = `<div class="empty-box">${escapeHtml(data.message || "학생 목록을 불러오지 못했습니다.")}</div>`;
           showOnly("teacher");
           return;
         }
-
         if (!data.students || data.students.length === 0) {
           teacherStudentList.innerHTML = `<div class="empty-box">담당 학생이 없습니다.</div>`;
         } else {
@@ -1081,62 +716,55 @@
             <div class="student-card ${currentTeacherStudentCode === student.code ? 'active' : ''}" data-student-code="${escapeHtml(student.code)}">
               <div class="student-name">${escapeHtml(student.name)}</div>
               <div class="student-code">${escapeHtml(student.code)}</div>
-            </div>
-          `).join("");
-
+            </div>`).join("");
           document.querySelectorAll(".student-card").forEach(card => {
             card.addEventListener("click", async () => {
               const studentCode = card.getAttribute("data-student-code");
               currentTeacherStudentCode = studentCode;
-              await loadTeacherStudentPlanner(studentCode);
-              await loadTeacherView(teacher);
+              startLoading("플래너 불러오는 중", "학생 플랜을 가져오고 있습니다.");
+              try {
+                await loadTeacherStudentPlanner(studentCode);
+                await loadTeacherView(teacher);
+              } finally {
+                stopLoading();
+              }
             });
           });
         }
-
         showOnly("teacher");
       } catch (e) {
         teacherStudentList.innerHTML = `<div class="empty-box">학생 목록을 불러오는 중 오류가 발생했습니다.</div>`;
         showOnly("teacher");
       } finally {
-        setLoading(false);
+        stopLoading();
       }
     }
 
     async function loadTeacherStudentPlanner(studentCode) {
-      setLoading(true, "학생 플래너 불러오는 중...");
       const data = await fetchStudentPlanner(studentCode);
-
       if (!data.success) {
-        setLoading(false);
         alert(data.message || "학생 플래너를 불러오지 못했습니다.");
         return;
       }
-
       currentStudentData = data;
       currentTeacherStudentCode = studentCode;
-
       const { todayPlans, weekPlans } = splitTodayAndWeek(data.planners || []);
 
       teacherSelectedInfo.textContent = `${data.student.name} · ${data.student.code}`;
-
       teacherStudentInfoBox.innerHTML = `
         <div><span>학생명</span> ${escapeHtml(data.student.name || "-")}</div>
         <div><span>학생코드</span> ${escapeHtml(data.student.code || "-")}</div>
-        <div><span>담당선생님</span> ${escapeHtml(data.student.teacherName || "-")}</div>
-      `;
-
-      if (todayPlans.length === 0) {
-        teacherTodayPlanBox.innerHTML = `<div class="empty-box">오늘 등록된 플랜이 없습니다.</div>`;
-      } else {
-        teacherTodayPlanBox.innerHTML = todayPlans.map(renderPlanItem).join("");
-      }
-
+        <div><span>담당선생님</span> ${escapeHtml(data.student.teacherName || "-")}</div>`;
+      teacherTodayPlanBox.innerHTML = todayPlans.length === 0
+        ? `<div class="empty-box">오늘 등록된 플랜이 없습니다.</div>`
+        : todayPlans.map(renderPlanItem).join("");
       renderWeekPlans(weekPlans, teacherWeekPlanBox);
-
       teacherPlannerEmpty.classList.add("hidden");
       teacherPlannerDetail.classList.remove("hidden");
+      resetAddForm();
+    }
 
+    function resetAddForm() {
       plannerDateInput.value = getTodayKey();
       plannerCategoryInput.value = "기타";
       plannerContentInput.value = "";
@@ -1144,79 +772,286 @@
       plannerMemoInput.value = "";
       plannerAddMsg.textContent = "";
       plannerAddMsg.classList.remove("success");
-      setLoading(false);
+      currentCurriculumItems = [];
+      curriculumSelect.innerHTML = `<option value="">커리큘럼 선택</option>`;
+      unitSelect.innerHTML = `<option value="">단원/강차 선택</option>`;
+      curriculumItemsWrap.innerHTML = `<div class="empty-box">커리큘럼과 단원/강차를 선택하면 항목이 표시됩니다.</div>`;
+      applyCategoryUI();
+    }
+
+    function applyCategoryUI() {
+      const category = plannerCategoryInput.value;
+      const isManual = ["기타", "단어", "듣기"].includes(category);
+      manualSection.classList.toggle("hidden", !isManual);
+      curriculumSection.classList.toggle("hidden", isManual);
+      plannerContentInput.disabled = !isManual;
+      if (!isManual) {
+        plannerContentInput.value = "";
+        loadCurriculaForCategory();
+      }
+    }
+
+    async function loadCurriculaForCategory() {
+      const category = plannerCategoryInput.value;
+      if (["기타", "단어", "듣기"].includes(category)) return;
+      try {
+        startLoading("커리큘럼 불러오는 중", "분류에 맞는 커리큘럼을 가져오고 있습니다.");
+        const data = await apiGet(`${API_URL}?action=curricula&category=${encodeURIComponent(category)}`);
+        if (!data.success) {
+          curriculumSelect.innerHTML = `<option value="">불러오기 실패</option>`;
+          return;
+        }
+        curriculumSelect.innerHTML = `<option value="">커리큘럼 선택</option>` + (data.curricula || [])
+          .map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`)
+          .join("");
+        unitSelect.innerHTML = `<option value="">단원/강차 선택</option>`;
+        curriculumItemsWrap.innerHTML = `<div class="empty-box">커리큘럼을 선택해 주세요.</div>`;
+      } finally {
+        stopLoading();
+      }
+    }
+
+    async function loadUnitsForCurriculum() {
+      const curriculumId = curriculumSelect.value;
+      if (!curriculumId) {
+        unitSelect.innerHTML = `<option value="">단원/강차 선택</option>`;
+        curriculumItemsWrap.innerHTML = `<div class="empty-box">커리큘럼을 선택해 주세요.</div>`;
+        return;
+      }
+      try {
+        startLoading("단원/강차 불러오는 중", "구성 목록을 가져오고 있습니다.");
+        const data = await apiGet(`${API_URL}?action=curriculumUnits&curriculumId=${encodeURIComponent(curriculumId)}`);
+        if (!data.success) {
+          unitSelect.innerHTML = `<option value="">불러오기 실패</option>`;
+          return;
+        }
+        const units = data.units || [];
+        if (units.length === 0) {
+          unitSelect.innerHTML = `<option value="">공통 항목만 있음</option>`;
+          await loadCurriculumItems();
+        } else {
+          unitSelect.innerHTML = `<option value="">단원/강차 선택</option>` + units
+            .map(unit => `<option value="${escapeHtml(unit)}">${escapeHtml(unit)}</option>`)
+            .join("");
+          curriculumItemsWrap.innerHTML = `<div class="empty-box">단원/강차를 선택해 주세요.</div>`;
+        }
+      } finally {
+        stopLoading();
+      }
+    }
+
+    async function loadCurriculumItems() {
+      const curriculumId = curriculumSelect.value;
+      const unitOrLecture = unitSelect.value;
+      if (!curriculumId) return;
+      if (unitSelect.options.length > 1 && !unitOrLecture) {
+        curriculumItemsWrap.innerHTML = `<div class="empty-box">단원/강차를 선택해 주세요.</div>`;
+        return;
+      }
+      try {
+        startLoading("구성 항목 불러오는 중", "선택 가능한 체크 항목을 가져오고 있습니다.");
+        const url = `${API_URL}?action=curriculumItems&curriculumId=${encodeURIComponent(curriculumId)}&unitOrLecture=${encodeURIComponent(unitOrLecture || "")}`;
+        const data = await apiGet(url);
+        if (!data.success) {
+          curriculumItemsWrap.innerHTML = `<div class="empty-box">${escapeHtml(data.message || "항목을 불러오지 못했습니다.")}</div>`;
+          return;
+        }
+        currentCurriculumItems = data.items || [];
+        if (currentCurriculumItems.length === 0) {
+          curriculumItemsWrap.innerHTML = `<div class="empty-box">선택 가능한 구성 항목이 없습니다.</div>`;
+          return;
+        }
+        curriculumItemsWrap.innerHTML = currentCurriculumItems.map(item => `
+          <label class="check-item">
+            <input type="checkbox" class="curr-item-checkbox" value="${escapeHtml(item.id)}" ${item.defaultSelected ? 'checked' : ''}>
+            <div>
+              <div class="check-main">${escapeHtml(item.name)}</div>
+              <div class="check-sub">${escapeHtml(item.unitOrLecture || unitOrLecture || '공통')}</div>
+            </div>
+          </label>`).join("");
+      } finally {
+        stopLoading();
+      }
+    }
+
+    function setCurriculumChecks(mode) {
+      const boxes = [...document.querySelectorAll('.curr-item-checkbox')];
+      if (boxes.length === 0) return;
+      if (mode === 'all') boxes.forEach(box => box.checked = true);
+      if (mode === 'none') boxes.forEach(box => box.checked = false);
+      if (mode === 'default') {
+        boxes.forEach(box => {
+          const item = currentCurriculumItems.find(x => x.id === box.value);
+          box.checked = !!item?.defaultSelected;
+        });
+      }
     }
 
     async function addPlannerItem() {
       plannerAddMsg.textContent = "";
       plannerAddMsg.classList.remove("success");
-
       if (!currentSession || currentSession.mode !== "teacher" || !currentSession.teacher) {
         plannerAddMsg.textContent = "선생님 로그인 정보가 없습니다.";
         return;
       }
-
       if (!currentTeacherStudentCode) {
         plannerAddMsg.textContent = "먼저 학생을 선택해 주세요.";
         return;
       }
-
       const date = plannerDateInput.value.trim();
       const category = plannerCategoryInput.value.trim();
-      const content = plannerContentInput.value.trim();
       const status = plannerStatusInput.value.trim();
       const memo = plannerMemoInput.value.trim();
-
-      if (!date || !category || !content || !status) {
-        plannerAddMsg.textContent = "날짜, 분류, 학습내용, 상태를 입력해 주세요.";
+      if (!date || !category || !status) {
+        plannerAddMsg.textContent = "날짜, 분류, 상태를 입력해 주세요.";
         return;
       }
 
-      if (!["기타", "단어", "듣기"].includes(category)) {
-        plannerAddMsg.textContent = "현재 직접 추가는 기타 / 단어 / 듣기만 가능합니다.";
-        return;
-      }
-
-      setLoading(true, "플래너 추가 중...");
       try {
-        const url = `${API_URL}?action=addManualPlannerItem`
-          + `&teacherId=${encodeURIComponent(currentSession.teacher.id)}`
-          + `&studentCode=${encodeURIComponent(currentTeacherStudentCode)}`
-          + `&date=${encodeURIComponent(date)}`
-          + `&category=${encodeURIComponent(category)}`
-          + `&content=${encodeURIComponent(content)}`
-          + `&status=${encodeURIComponent(status)}`
-          + `&memo=${encodeURIComponent(memo)}`;
-
-        const res = await fetch(url);
-        const data = await res.json();
+        startLoading("플래너 추가 중", "시트에 저장하고 있습니다.");
+        let data;
+        if (["기타", "단어", "듣기"].includes(category)) {
+          const content = plannerContentInput.value.trim();
+          if (!content) {
+            plannerAddMsg.textContent = "학습내용을 입력해 주세요.";
+            return;
+          }
+          const url = `${API_URL}?action=addManualPlannerItem`
+            + `&teacherId=${encodeURIComponent(currentSession.teacher.id)}`
+            + `&studentCode=${encodeURIComponent(currentTeacherStudentCode)}`
+            + `&date=${encodeURIComponent(date)}`
+            + `&category=${encodeURIComponent(category)}`
+            + `&content=${encodeURIComponent(content)}`
+            + `&status=${encodeURIComponent(status)}`
+            + `&memo=${encodeURIComponent(memo)}`;
+          data = await apiGet(url);
+        } else {
+          const curriculumId = curriculumSelect.value;
+          const unitOrLecture = unitSelect.value;
+          const selectedItemIds = [...document.querySelectorAll('.curr-item-checkbox:checked')].map(el => el.value);
+          if (!curriculumId) {
+            plannerAddMsg.textContent = "커리큘럼을 선택해 주세요.";
+            return;
+          }
+          if (unitSelect.options.length > 1 && !unitOrLecture) {
+            plannerAddMsg.textContent = "단원/강차를 선택해 주세요.";
+            return;
+          }
+          if (selectedItemIds.length === 0) {
+            plannerAddMsg.textContent = "추가할 항목을 하나 이상 선택해 주세요.";
+            return;
+          }
+          const url = `${API_URL}?action=addCurriculumPlannerItems`
+            + `&teacherId=${encodeURIComponent(currentSession.teacher.id)}`
+            + `&studentCode=${encodeURIComponent(currentTeacherStudentCode)}`
+            + `&date=${encodeURIComponent(date)}`
+            + `&category=${encodeURIComponent(category)}`
+            + `&curriculumId=${encodeURIComponent(curriculumId)}`
+            + `&unitOrLecture=${encodeURIComponent(unitOrLecture)}`
+            + `&selectedItemIds=${encodeURIComponent(selectedItemIds.join(','))}`
+            + `&status=${encodeURIComponent(status)}`
+            + `&memo=${encodeURIComponent(memo)}`;
+          data = await apiGet(url);
+        }
 
         if (!data.success) {
           plannerAddMsg.textContent = data.message || "추가에 실패했습니다.";
           return;
         }
-
-        plannerAddMsg.textContent = "플래너가 추가되었습니다.";
+        plannerAddMsg.textContent = data.message || "플래너가 추가되었습니다.";
         plannerAddMsg.classList.add("success");
-
         await loadTeacherStudentPlanner(currentTeacherStudentCode);
       } catch (e) {
         plannerAddMsg.textContent = "추가 중 오류가 발생했습니다.";
       } finally {
-        setLoading(false);
+        stopLoading();
       }
     }
 
     async function copyStudentTodayPlans() {
       if (!currentStudentData) return;
       const { todayPlans } = splitTodayAndWeek(currentStudentData.planners || []);
-      const text = buildTodayText(currentStudentData.student, todayPlans);
-      await copyText(text, "오늘 플랜이 복사되었습니다.");
+      await copyText(buildTodayText(currentStudentData.student, todayPlans), "오늘 플랜이 복사되었습니다.");
     }
 
     async function copyTeacherSelectedStudentCode() {
       if (!currentStudentData) return;
       await copyText(currentStudentData.student.code, "학생코드가 복사되었습니다.");
+    }
+
+    function renderImageCard(student, todayPlans) {
+      const dateText = new Date().toLocaleDateString('ko-KR');
+      const itemsHtml = (!todayPlans || todayPlans.length === 0)
+        ? `<div class="image-item"><div class="image-item-content">오늘 등록된 플랜이 없습니다.</div></div>`
+        : todayPlans.map(plan => `
+            <div class="image-item">
+              <div class="image-item-top">
+                <div>
+                  <span class="image-badge">${escapeHtml(plan.category || '-')}</span>
+                  ${plan.curriculumName ? `<span class="image-badge">${escapeHtml(plan.curriculumName)}</span>` : ''}
+                </div>
+                <div class="image-badge">${escapeHtml(plan.status || '-')}</div>
+              </div>
+              ${plan.unitOrLecture ? `<div class="image-meta">${escapeHtml(plan.unitOrLecture)}</div>` : ''}
+              <div class="image-item-content">${escapeHtml(plan.content || '-')}</div>
+              ${plan.memo ? `<div class="image-meta">메모: ${escapeHtml(plan.memo)}</div>` : ''}
+            </div>`).join('');
+
+      return `
+        <div class="image-card" id="planImageCard">
+          <div class="image-head">
+            <div>
+              <div class="image-title">오늘의 플랜</div>
+              <div class="image-meta">학생명: ${escapeHtml(student.name)}<br>학생코드: ${escapeHtml(student.code)}<br>날짜: ${escapeHtml(dateText)}</div>
+            </div>
+            <div class="image-badge">${escapeHtml(student.teacherName || '')}</div>
+          </div>
+          <div class="image-items">${itemsHtml}</div>
+          <div class="image-footer">학생 플래너</div>
+        </div>`;
+    }
+
+    async function makeTodayImageBlob() {
+      if (!currentStudentData) throw new Error('학생 데이터가 없습니다.');
+      const { todayPlans } = splitTodayAndWeek(currentStudentData.planners || []);
+      imageRenderArea.innerHTML = renderImageCard(currentStudentData.student, todayPlans);
+      const node = document.getElementById('planImageCard');
+      return await htmlToImage.toBlob(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#fffdf9' });
+    }
+
+    async function copyTodayImage() {
+      if (!window.ClipboardItem) {
+        alert('이 브라우저는 이미지 클립보드 복사를 지원하지 않습니다. 이미지 저장을 사용해 주세요.');
+        return;
+      }
+      try {
+        startLoading('이미지 복사 중', '플랜 이미지를 만들고 있습니다.');
+        const blob = await makeTodayImageBlob();
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        alert('플랜 이미지가 복사되었습니다. 카카오톡에 붙여넣어 보세요.');
+      } catch (e) {
+        alert('이미지 복사에 실패했습니다. 이미지 저장 버튼을 사용해 주세요.');
+      } finally {
+        stopLoading();
+      }
+    }
+
+    async function downloadTodayImage() {
+      try {
+        startLoading('이미지 저장 준비 중', '플랜 이미지를 만들고 있습니다.');
+        const { todayPlans } = splitTodayAndWeek(currentStudentData.planners || []);
+        imageRenderArea.innerHTML = renderImageCard(currentStudentData.student, todayPlans);
+        const node = document.getElementById('planImageCard');
+        const dataUrl = await htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true, backgroundColor: '#fffdf9' });
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${currentStudentData.student.name}_오늘플랜.png`;
+        link.click();
+      } catch (e) {
+        alert('이미지 저장에 실패했습니다.');
+      } finally {
+        stopLoading();
+      }
     }
 
     function goHome() {
@@ -1230,19 +1065,28 @@
     }
 
     enterBtn.addEventListener("click", enterCode);
-    codeInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") enterCode();
-    });
+    codeInput.addEventListener("keydown", e => { if (e.key === "Enter") enterCode(); });
+    plannerCategoryInput.addEventListener('change', applyCategoryUI);
+    curriculumSelect.addEventListener('change', loadUnitsForCurriculum);
+    unitSelect.addEventListener('change', loadCurriculumItems);
+    selectDefaultsBtn.addEventListener('click', () => setCurriculumChecks('default'));
+    selectAllBtn.addEventListener('click', () => setCurriculumChecks('all'));
+    clearAllBtn.addEventListener('click', () => setCurriculumChecks('none'));
 
     copyTodayBtn.addEventListener("click", copyStudentTodayPlans);
     teacherCopyTodayBtn.addEventListener("click", copyStudentTodayPlans);
     teacherCopyStudentCodeBtn.addEventListener("click", copyTeacherSelectedStudentCode);
     addPlannerBtn.addEventListener("click", addPlannerItem);
+    copyTodayImageBtn.addEventListener('click', copyTodayImage);
+    teacherCopyTodayImageBtn.addEventListener('click', copyTodayImage);
+    downloadTodayImageBtn.addEventListener('click', downloadTodayImage);
+    teacherDownloadTodayImageBtn.addEventListener('click', downloadTodayImage);
 
     studentLogoutBtn.addEventListener("click", goHome);
     teacherLogoutBtn.addEventListener("click", goHome);
 
     window.addEventListener("load", () => {
+      localStorage.removeItem('plannerSession');
       showOnly("landing");
     });
   </script>
